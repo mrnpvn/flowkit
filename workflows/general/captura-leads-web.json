@@ -1,0 +1,190 @@
+{
+  "name": "FlowKit — Captura de leads web",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## FlowKit — Captura de leads web\n\n**Qué hace este flujo**\n1. Muestra un formulario web alojado en tu propio n8n.\n2. Normaliza los datos (nombre, email, teléfono, mensaje, fecha).\n3. Guarda cada lead como una fila en tu hoja de cálculo.\n4. Te avisa por Telegram con el resumen del lead.\n\n**Qué tienes que configurar (3 pasos)**\n1. Nodo *Formulario web*: ponle tu ruta y, si quieres, personaliza los campos.\n2. Nodo *Guardar en Google Sheets*: elige tu hoja y credencial OAuth2.\n3. Nodo *Aviso Telegram*: pega la credencial del bot (@BotFather → /newbot) y elige tu chat.\n\nCuando no quede ningún triángulo rojo: **Save → Execute Workflow** para probar, y luego **Active**.\n\nGuía completa: docs/INSTALACION-N8N.md",
+        "height": 460,
+        "width": 420,
+        "color": 5
+      },
+      "id": "9f1c2b30-0001-4a01-9c01-flowkit0001",
+      "name": "Léeme primero",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-620, -40]
+    },
+    {
+      "parameters": {
+        "formTitle": "Cuéntanos qué necesitas",
+        "formDescription": "Déjanos tus datos y te contactamos en menos de 24 horas.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Nombre",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Telefono",
+              "fieldType": "text",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "Mensaje",
+              "fieldType": "textarea",
+              "requiredField": false
+            }
+          ]
+        },
+        "options": {
+          "path": "flowkit-lead",
+          "appendAttribution": false
+        }
+      },
+      "id": "9f1c2b30-0002-4a01-9c02-flowkit0002",
+      "name": "Formulario web",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [-140, 0],
+      "webhookId": "flowkit-lead"
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": true,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fb01",
+              "name": "nombre",
+              "value": "={{ $json[\"Nombre\"] || $json.nombre || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "fb02",
+              "name": "email",
+              "value": "={{ $json[\"Email\"] || $json.email || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "fb03",
+              "name": "telefono",
+              "value": "={{ $json[\"Telefono\"] || $json.telefono || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "fb04",
+              "name": "mensaje",
+              "value": "={{ $json[\"Mensaje\"] || $json.mensaje || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "fb05",
+              "name": "recibido_en",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "9f1c2b30-0003-4a01-9c03-flowkit0003",
+      "name": "Normalizar datos",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [120, 0]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {}
+      },
+      "id": "9f1c2b30-0004-4a01-9c04-flowkit0004",
+      "name": "Guardar en Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [380, 0]
+    },
+    {
+      "parameters": {
+        "chatId": "",
+        "text": "=Nuevo lead desde la web\n\nNombre: {{ $json.nombre }}\nEmail: {{ $json.email }}\nTelefono: {{ $json.telefono }}\nMensaje: {{ $json.mensaje }}\nRecibido: {{ $json.recibido_en }}",
+        "additionalFields": {}
+      },
+      "id": "9f1c2b30-0005-4a01-9c05-flowkit0005",
+      "name": "Aviso Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [640, 0]
+    }
+  ],
+  "connections": {
+    "Formulario web": {
+      "main": [
+        [
+          {
+            "node": "Normalizar datos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar datos": {
+      "main": [
+        [
+          {
+            "node": "Guardar en Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar en Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Aviso Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "flowkit": {
+      "id": "general/captura-leads-web",
+      "version": "1.0.0",
+      "docs": "https://github.com/mrnpvn/flowkit/blob/main/docs/CATALOGO.md"
+    }
+  },
+  "tags": []
+}

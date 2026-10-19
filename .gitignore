@@ -1,0 +1,32 @@
+# Dependencias
+node_modules/
+vendor/
+
+# Entorno y secretos
+.env
+.env.*
+!.env.example
+*.local
+credentials*.json
+*.key
+
+# n8n local (datos de ejecución, base de datos, logs)
+.n8n/
+n8n_data/
+*.sqlite
+*.sqlite3
+database.sqlite
+
+# Salidas y temporales
+dist/
+build/
+tmp/
+out/
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+__pycache__/
+*.pyc
