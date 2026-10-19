@@ -26,10 +26,10 @@ FlowKit empaqueta ese trabajo en flujos probados: los importas, conectas tus cue
 |---|---|---|---|
 | Captura de leads web (formulario → hoja de cálculo → aviso Telegram) | General | ✅ Listo | [`workflows/general/captura-leads-web.json`](workflows/general/captura-leads-web.json) |
 | Asesoría: alta de cliente + recordatorio de plazos fiscales | Asesoría / gestoría | ✅ Listo | [`workflows/asesoria/alta-cliente-plazos.json`](workflows/asesoria/alta-cliente-plazos.json) |
-| Clínica: recordatorio de cita + recuperación de cancelaciones | Clínica / dental | 🚧 En construcción | `workflows/clinica/` |
+| Clínica: recordatorio de cita + recuperación de cancelaciones | Clínica / dental | ✅ Listo | [`workflows/clinica/recordatorio-citas.json`](workflows/clinica/recordatorio-citas.json) |
 | Inmobiliaria: captación de leads + respuesta automática | Inmobiliaria | 🚧 En construcción | `workflows/inmobiliaria/` |
 
-Cada flujo incluye su propia ficha en [`docs/CATALOGO.md`](docs/CATALOGO.md): qué hace, qué necesitas configurar, qué datos toca y cuánto tiempo ahorra. Las guías de puesta en marcha están en [`docs/`](docs/): [`INSTALACION-N8N.md`](docs/INSTALACION-N8N.md) (general) y [`FLUJO-ASESORIA.md`](docs/FLUJO-ASESORIA.md) (alta de cliente + plazos fiscales).
+Cada flujo incluye su propia ficha en [`docs/CATALOGO.md`](docs/CATALOGO.md): qué hace, qué necesitas configurar, qué datos toca y cuánto tiempo ahorra. Las guías de puesta en marcha están en [`docs/`](docs/): [`INSTALACION-N8N.md`](docs/INSTALACION-N8N.md) (general), [`FLUJO-ASESORIA.md`](docs/FLUJO-ASESORIA.md) (alta de cliente + plazos fiscales) y [`FLUJO-CLINICA.md`](docs/FLUJO-CLINICA.md) (recordatorios de cita + cancelaciones).
 
 ## Instalación (2 minutos)
 

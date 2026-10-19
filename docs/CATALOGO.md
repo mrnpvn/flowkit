@@ -35,12 +35,21 @@ Estados: **✅ listo** (probado, se puede importar ya) · **🚧 en construcció
 - **Tiempo de puesta en marcha:** 20–30 minutos.
 - **Nota legal:** los avisos son **recordatorios internos de gestión**, no asesoramiento fiscal automatizado ni presentación de modelos ante la AEAT. Las fechas son las generales del calendario estatal: verifica siempre el calendario oficial y las particularidades forales (Navarra, País Vasco) antes de presentar.
 
-## 🚧 Clínica — recordatorio de cita y recuperación de cancelaciones
+## ✅ Clínica — recordatorio de cita y recuperación de cancelaciones
 
+- **Archivo:** `workflows/clinica/recordatorio-citas.json`
+- **Guía:** [`FLUJO-CLINICA.md`](FLUJO-CLINICA.md)
 - **Vertical:** clínicas dentales, fisioterapia, estética, consultas privadas
-- **Qué hará:** avisar al paciente de su cita 24 h antes, permitir confirmar o cancelar con un clic, y cuando alguien cancele **avisar al equipo con el hueco liberado** para intentar rellenarlo.
-- **Qué necesitará:** Google Calendar o tu agenda en Sheets, Telegram o email.
-- **Nota legal:** se manejan **datos de salud** (categoría especial, art. 9 RGPD). Requiere consentimiento informado y una política de privacidad que mencione los recordatorios; el flujo no incluye diagnóstico ni recomendación médica.
+- **Disparador:** formulario web (alta de cita) + programación diaria a las 18:00 (recordatorios) + webhook (enlaces del paciente)
+- **Qué hace:**
+  1. **Alta** — recepción rellena el formulario → la cita se guarda en la hoja `Citas` con estado `Pendiente` → aviso al equipo por Telegram.
+  2. **Recordatorio** — cada día a las 18:00 lee la agenda, selecciona las citas de **mañana** (no canceladas ni atendidas) y envía **un email por paciente** con fecha, hora y dos enlaces: confirmar o cancelar. Al equipo le llega **un solo resumen** de la agenda, con las citas sin email marcadas para llamarlas.
+  3. **Respuesta** — el paciente pulsa confirmar o cancelar → la hoja se actualiza por `ID` → el equipo recibe el aviso; si es cancelación, incluye el **hueco liberado** para ofrecerlo a otro paciente.
+- **Qué necesitas:** una hoja de Google Sheets con las cabeceras de la guía, un bot de Telegram, una cuenta SMTP para los emails y una URL pública de n8n para los enlaces. n8n 1.40+.
+- **Datos personales que trata:** identificativos y de contacto (nombre, teléfono, email) y la existencia de una cita, que es **dato de salud** (art. 9 RGPD). El email no incluye el motivo de la cita; el detalle queda en la hoja interna. El flujo corre en tu propio n8n.
+- **Ahorro estimado:** con 30–50 citas al día, las llamadas de recordatorio son 1–2 horas diarias de recepción; además, cada cancelación avisada a tiempo permite recuperar el hueco. El flujo sustituye el "llamar uno por uno" por una revisión de la agenda.
+- **Tiempo de puesta en marcha:** 30–40 minutos.
+- **Nota legal:** requiere consentimiento informado del paciente para los recordatorios, política de privacidad que los mencione y acceso restringido a la hoja y al chat interno. **No diagnostica, no recomienda tratamientos y no toma decisiones clínicas.** Revisa la guía (sección RGPD) antes de usarlo con datos reales.
 
 ## 🚧 Inmobiliaria — captación de leads y respuesta automática
 
@@ -65,3 +74,4 @@ Precio previsto: **29–79 €** según el pack. Se anunciará en este repositor
 |---|---|
 | 2026-10-19 | Publicación del repositorio: estructura, documentación y flujo gratuito `captura-leads-web` v1. |
 | 2026-10-19 | Nuevo flujo `asesoria/alta-cliente-plazos` v1.0.0 (alta de cliente + recordatorio de 8 modelos a 21 días) + guía `FLUJO-ASESORIA.md`. |
+| 2026-10-19 | Nuevo flujo `clinica/recordatorio-citas` v1.0.0 (alta de cita + email 24 h antes + confirmar/cancelar en un clic + aviso de hueco liberado) + guía `FLUJO-CLINICA.md`. |

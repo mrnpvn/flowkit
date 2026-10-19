@@ -1,0 +1,686 @@
+{
+  "name": "FlowKit — Clínica: recordatorio de cita + recuperación de cancelaciones",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## FlowKit — Clínica\n\nEste flujo tiene **tres partes** independientes:\n\n**A) Nueva cita** (formulario)\n1. Recepción rellena el formulario.\n2. La cita se guarda en la hoja `Citas` con estado `Pendiente`.\n3. El equipo recibe un aviso por Telegram.\n\n**B) Recordatorio 24 h antes** (cada día a las 18:00)\n1. Lee la hoja `Citas`.\n2. Selecciona las citas de **mañana** (no canceladas).\n3. Envía un email a cada paciente con dos enlaces: **confirmar** o **cancelar**.\n4. Envía al equipo un resumen de la agenda de mañana.\n\n**C) Enlaces del paciente** (webhook)\n1. El paciente pulsa confirmar o cancelar.\n2. La cita se actualiza en la hoja.\n3. El equipo recibe un aviso; si cancela, con el **hueco liberado**.\n4. El paciente ve una página de confirmación.\n\n**Configurar (5 pasos)**\n1. Hoja de Google Sheets con estas columnas exactas:\n   `ID | Paciente | Telefono | Email | Tratamiento | Fecha | Hora | Estado | Notas | Alta | Actualizado`\n2. En los **tres** nodos de Google Sheets elige esa hoja.\n3. En los **tres** nodos de Telegram elige el chat del equipo.\n4. En el nodo *Recordatorios a pacientes* cambia `BASE_URL` por la URL pública de tu n8n y `CENTRO` por el nombre de tu clínica.\n5. Configura el email (SMTP) y prueba. Luego activa.\n\nMás abajo, el nodo *Resumen para el equipo* no envía nada si mañana no hay citas.\n\nGuía completa: docs/FLUJO-CLINICA.md\n\n**Datos de salud (RGPD, art. 9):** usa este flujo solo con consentimiento informado del paciente y una política de privacidad que mencione los recordatorios. No incluye diagnóstico ni recomendación médica.",
+        "height": 760,
+        "width": 500,
+        "color": 5
+      },
+      "id": "c1a2b3c4-0001-4a01-9c01-clinica001",
+      "name": "Léeme primero",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -820,
+        -180
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### A) Nueva cita\nFormulario → normalizar → hoja `Citas` → aviso al equipo.",
+        "height": 200,
+        "width": 380,
+        "color": 4
+      },
+      "id": "c1a2b3c4-0002-4a01-9c02-clinica002",
+      "name": "Parte A — Nueva cita",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        -280
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### B) Recordatorio 24 h antes\nCada día a las 18:00: email a los pacientes de mañana + resumen al equipo.\n\nSi no hay citas, no envía nada.",
+        "height": 240,
+        "width": 400,
+        "color": 6
+      },
+      "id": "c1a2b3c4-0003-4a01-9c03-clinica003",
+      "name": "Parte B — Recordatorios",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### C) Enlaces del paciente\nConfirmar o cancelar en un clic → actualiza la hoja → aviso al equipo.\n\nLa URL del webhook debe coincidir con `BASE_URL` del nodo *Recordatorios a pacientes*.",
+        "height": 240,
+        "width": 400,
+        "color": 7
+      },
+      "id": "c1a2b3c4-0004-4a01-9c04-clinica004",
+      "name": "Parte C — Enlaces",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -260,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "formTitle": "Nueva cita — clínica",
+        "formDescription": "Rellena los datos de la cita. Los campos marcados con * son obligatorios.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Nombre del paciente",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Teléfono",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Tratamiento o motivo",
+              "fieldType": "text",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "Fecha de la cita",
+              "fieldType": "date",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Hora (HH:MM)",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Notas",
+              "fieldType": "textarea",
+              "requiredField": false
+            }
+          ]
+        },
+        "options": {
+          "path": "flowkit-nueva-cita",
+          "appendAttribution": false
+        }
+      },
+      "id": "c1a2b3c4-0005-4a01-9c05-clinica005",
+      "name": "Formulario nueva cita",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -220,
+        20
+      ],
+      "webhookId": "flowkit-nueva-cita"
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cl01",
+              "name": "ID",
+              "value": "={{ 'CITA-' + $now.toFormat('yyyyMMddHHmmss') + '-' + Math.random().toString(36).slice(2, 12) }}",
+              "type": "string"
+            },
+            {
+              "id": "cl02",
+              "name": "Paciente",
+              "value": "={{ $json[\"Nombre del paciente\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "cl03",
+              "name": "Telefono",
+              "value": "={{ $json[\"Teléfono\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "cl04",
+              "name": "Email",
+              "value": "={{ $json[\"Email\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "cl05",
+              "name": "Tratamiento",
+              "value": "={{ $json[\"Tratamiento o motivo\"] || 'Consulta' }}",
+              "type": "string"
+            },
+            {
+              "id": "cl06",
+              "name": "Fecha",
+              "value": "={{ $json[\"Fecha de la cita\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "cl07",
+              "name": "Hora",
+              "value": "={{ $json[\"Hora (HH:MM)\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "cl08",
+              "name": "Estado",
+              "value": "Pendiente",
+              "type": "string"
+            },
+            {
+              "id": "cl09",
+              "name": "Notas",
+              "value": "={{ $json[\"Notas\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "cl10",
+              "name": "Alta",
+              "value": "={{ $now.toFormat('yyyy-MM-dd HH:mm') }}",
+              "type": "string"
+            },
+            {
+              "id": "cl11",
+              "name": "Actualizado",
+              "value": "={{ $now.toFormat('yyyy-MM-dd HH:mm') }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c1a2b3c4-0006-4a01-9c06-clinica006",
+      "name": "Normalizar cita",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        100,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {}
+      },
+      "id": "c1a2b3c4-0007-4a01-9c07-clinica007",
+      "name": "Guardar cita",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        380,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "",
+        "text": "=Nueva cita registrada\n\nID: {{ $json.ID }}\nPaciente: {{ $json.Paciente }}\nTeléfono: {{ $json.Telefono }}\nFecha: {{ $json.Fecha }} a las {{ $json.Hora }}\nTratamiento: {{ $json.Tratamiento }}\nEstado: {{ $json.Estado }}",
+        "additionalFields": {}
+      },
+      "id": "c1a2b3c4-0008-4a01-9c08-clinica008",
+      "name": "Aviso nueva cita (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 18,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "c1a2b3c4-0009-4a01-9c09-clinica009",
+      "name": "Cada día a las 18:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -220,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "id": "c1a2b3c4-0010-4a01-9c10-clinica010",
+      "name": "Leer citas",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        100,
+        460
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const BASE_URL = 'https://TU-N8N.ejemplo.com';\nconst CENTRO = 'tu centro';\nconst NL = String.fromCharCode(10);\n\nconst hoy = new Date();\nhoy.setHours(0, 0, 0, 0);\nconst manana = new Date(hoy.getTime() + 86400000);\n\nfunction parseFecha(v) {\n  if (!v) return null;\n  if (v instanceof Date) return new Date(v.getFullYear(), v.getMonth(), v.getDate());\n  let s = String(v).trim();\n  if (s.length >= 10 && s.charAt(4) === '-') s = s.slice(0, 10);\n  let p = s.split('/');\n  if (p.length === 3) return new Date(Number(p[2]), Number(p[1]) - 1, Number(p[0]));\n  p = s.split('-');\n  if (p.length === 3) {\n    if (p[0].length === 4) return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));\n    return new Date(Number(p[2]), Number(p[1]) - 1, Number(p[0]));\n  }\n  const d = new Date(s);\n  return isNaN(d.getTime()) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());\n}\n\nfunction fechaTexto(d) {\n  const dd = String(d.getDate()).padStart(2, '0');\n  const mm = String(d.getMonth() + 1).padStart(2, '0');\n  return dd + '/' + mm + '/' + d.getFullYear();\n}\n\nconst base = BASE_URL.endsWith('/') ? BASE_URL.slice(0, -1) : BASE_URL;\nconst filas = $input.all().map(i => i.json);\nconst salida = [];\n\nfor (const c of filas) {\n  const estado = String(c.Estado || 'Pendiente').trim().toLowerCase();\n  if (estado.indexOf('cancel') === 0 || estado.indexOf('atendid') === 0) continue;\n  const f = parseFecha(c.Fecha);\n  if (!f || f.getTime() !== manana.getTime()) continue;\n  const email = String(c.Email || '').trim();\n  if (!email) continue;\n  const id = String(c.ID || '').trim();\n  if (!id) continue;\n  const nombre = String(c.Paciente || 'paciente').trim() || 'paciente';\n  const hora = String(c.Hora || '').trim() || 'la hora acordada';\n  const confirmar = base + '/webhook/flowkit-cita?id=' + encodeURIComponent(id) + '&accion=confirmar';\n  const cancelar = base + '/webhook/flowkit-cita?id=' + encodeURIComponent(id) + '&accion=cancelar';\n  const asunto = 'Recordatorio de cita — ' + fechaTexto(manana) + ' a las ' + hora;\n  const cuerpo = [\n    'Hola ' + nombre + ':',\n    '',\n    'Te recordamos tu cita en ' + CENTRO + ' el ' + fechaTexto(manana) + ' a las ' + hora + '.',\n    '',\n    'Confirma tu asistencia aquí:',\n    confirmar,\n    '',\n    'Si no puedes venir, cancela aquí para que podamos ofrecer el hueco a otra persona:',\n    cancelar,\n    '',\n    'Si ya has confirmado o cancelado, ignora este mensaje.'\n  ].join(NL);\n  salida.push({ json: { to: email, asunto: asunto, cuerpo: cuerpo, id: id } });\n}\n\nreturn salida;"
+      },
+      "id": "c1a2b3c4-0011-4a01-9c11-clinica011",
+      "name": "Recordatorios a pacientes",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        380,
+        380
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "",
+        "toEmail": "={{ $json.to }}",
+        "subject": "={{ $json.asunto }}",
+        "emailFormat": "text",
+        "text": "={{ $json.cuerpo }}",
+        "options": {}
+      },
+      "id": "c1a2b3c4-0012-4a01-9c12-clinica012",
+      "name": "Email recordatorio",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        660,
+        380
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "const NL = String.fromCharCode(10);\n\nconst hoy = new Date();\nhoy.setHours(0, 0, 0, 0);\nconst manana = new Date(hoy.getTime() + 86400000);\n\nfunction parseFecha(v) {\n  if (!v) return null;\n  if (v instanceof Date) return new Date(v.getFullYear(), v.getMonth(), v.getDate());\n  let s = String(v).trim();\n  if (s.length >= 10 && s.charAt(4) === '-') s = s.slice(0, 10);\n  let p = s.split('/');\n  if (p.length === 3) return new Date(Number(p[2]), Number(p[1]) - 1, Number(p[0]));\n  p = s.split('-');\n  if (p.length === 3) {\n    if (p[0].length === 4) return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));\n    return new Date(Number(p[2]), Number(p[1]) - 1, Number(p[0]));\n  }\n  const d = new Date(s);\n  return isNaN(d.getTime()) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());\n}\n\nfunction fechaTexto(d) {\n  const dd = String(d.getDate()).padStart(2, '0');\n  const mm = String(d.getMonth() + 1).padStart(2, '0');\n  return dd + '/' + mm + '/' + d.getFullYear();\n}\n\nconst filas = $input.all().map(i => i.json);\nconst citas = [];\n\nfor (const c of filas) {\n  const estado = String(c.Estado || 'Pendiente').trim();\n  const est = estado.toLowerCase();\n  if (est.indexOf('cancel') === 0 || est.indexOf('atendid') === 0) continue;\n  const f = parseFecha(c.Fecha);\n  if (!f || f.getTime() !== manana.getTime()) continue;\n  citas.push({\n    hora: String(c.Hora || '').trim(),\n    paciente: String(c.Paciente || 'sin nombre').trim(),\n    que: String(c.Tratamiento || 'consulta').trim(),\n    estado: estado || 'Pendiente',\n    email: String(c.Email || '').trim()\n  });\n}\n\nif (citas.length === 0) return [];\n\ncitas.sort((a, b) => String(a.hora).localeCompare(String(b.hora)));\nconst lineas = citas.map(c => '• ' + (c.hora || '--:--') + ' · ' + c.paciente + ' · ' + c.que + ' · ' + c.estado + (c.email ? '' : ' · SIN EMAIL'));\nconst texto = 'Agenda de mañana (' + fechaTexto(manana) + '): ' + citas.length + ' cita(s)' + NL + NL + lineas.join(NL) + NL + NL + 'Los pacientes con email han recibido el recordatorio con enlaces para confirmar o cancelar.';\n\nreturn [{ json: { texto: texto, total: citas.length, fecha: fechaTexto(manana) } }];"
+      },
+      "id": "c1a2b3c4-0013-4a01-9c13-clinica013",
+      "name": "Resumen para el equipo",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        380,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "",
+        "text": "={{ $json.texto }}",
+        "additionalFields": {}
+      },
+      "id": "c1a2b3c4-0014-4a01-9c14-clinica014",
+      "name": "Resumen de mañana (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        560
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "flowkit-cita",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "c1a2b3c4-0015-4a01-9c15-clinica015",
+      "name": "Enlace confirmar/cancelar",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -220,
+        960
+      ],
+      "webhookId": "flowkit-cita"
+    },
+    {
+      "parameters": {
+        "jsCode": "const q = ($json.query && typeof $json.query === 'object') ? $json.query : {};\nconst id = String(q.id || '').trim();\nconst accion = String(q.accion || '').trim().toLowerCase();\nconst ok = id.length > 0 && (accion === 'confirmar' || accion === 'cancelar');\nconst confirmada = accion === 'confirmar';\nconst nuevo_estado = ok ? (confirmada ? 'Confirmada' : 'Cancelada') : '';\nconst titulo = ok ? (confirmada ? 'Cita confirmada' : 'Cita cancelada') : 'Enlace no válido';\nconst mensaje = ok\n  ? (confirmada ? 'Gracias. Hemos registrado tu confirmación y avisado al centro.' : 'Hemos registrado la cancelación y avisado al centro para liberar el hueco.')\n  : 'El enlace no contiene una cita válida. Si necesitas cambiar tu cita, contacta directamente con el centro.';\nconst color = ok ? (confirmada ? '#0a7d32' : '#b3261e') : '#6b7280';\nconst aviso = ok\n  ? ('Cita ' + (confirmada ? 'CONFIRMADA' : 'CANCELADA') + ' por el paciente' + String.fromCharCode(10) + 'ID: ' + id + (confirmada ? '' : String.fromCharCode(10, 10) + 'Hueco libre: revisa la agenda y ofrece el hueco a otro paciente.'))\n  : ('Enlace de cita no válido' + String.fromCharCode(10) + 'ID: ' + (id || '(vacío)') + ' · Acción: ' + (accion || '(vacía)'));\nconst html = '<!DOCTYPE html><html lang=\"es\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>' + titulo + '</title></head><body style=\"margin:0;padding:40px 16px;background:#f6f7f9;font-family:system-ui,-apple-system,Segoe UI,sans-serif;\"><main style=\"max-width:520px;margin:0 auto;background:#ffffff;border-radius:14px;padding:32px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.08);\"><h1 style=\"margin:0 0 12px;font-size:24px;color:' + color + ';\">' + titulo + '</h1><p style=\"margin:0;font-size:16px;line-height:1.5;color:#333333;\">' + mensaje + '</p><p style=\"margin:24px 0 0;font-size:13px;color:#888888;\">Puedes cerrar esta página.</p></main></body></html>';\nreturn [{ json: { ok: ok, id: id, accion: accion, nuevo_estado: nuevo_estado, aviso: aviso, html: html } }];"
+      },
+      "id": "c1a2b3c4-0016-4a01-9c16-clinica016",
+      "name": "Leer enlace",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        100,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "clinica-if-01",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c1a2b3c4-0017-4a01-9c17-clinica017",
+      "name": "¿Enlace válido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        380,
+        960
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Estado": "={{ $json.nuevo_estado }}",
+            "Actualizado": "={{ $now.toFormat('yyyy-MM-dd HH:mm') }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "c1a2b3c4-0018-4a01-9c18-clinica018",
+      "name": "Actualizar estado de la cita",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        660,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "",
+        "text": "={{ $('Leer enlace').item.json.aviso }}",
+        "additionalFields": {}
+      },
+      "id": "c1a2b3c4-0019-4a01-9c19-clinica019",
+      "name": "Aviso cambio de cita (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        940,
+        880
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $('Leer enlace').item.json.html }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "id": "c1a2b3c4-0020-4a01-9c20-clinica020",
+      "name": "Página: cita actualizada",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1220,
+        880
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $('Leer enlace').item.json.html }}",
+        "options": {
+          "responseCode": 400,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "id": "c1a2b3c4-0021-4a01-9c21-clinica021",
+      "name": "Página: enlace no válido",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        660,
+        1080
+      ]
+    }
+  ],
+  "connections": {
+    "Formulario nueva cita": {
+      "main": [
+        [
+          {
+            "node": "Normalizar cita",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar cita": {
+      "main": [
+        [
+          {
+            "node": "Guardar cita",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar cita": {
+      "main": [
+        [
+          {
+            "node": "Aviso nueva cita (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cada día a las 18:00": {
+      "main": [
+        [
+          {
+            "node": "Leer citas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer citas": {
+      "main": [
+        [
+          {
+            "node": "Recordatorios a pacientes",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Resumen para el equipo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recordatorios a pacientes": {
+      "main": [
+        [
+          {
+            "node": "Email recordatorio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resumen para el equipo": {
+      "main": [
+        [
+          {
+            "node": "Resumen de mañana (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enlace confirmar/cancelar": {
+      "main": [
+        [
+          {
+            "node": "Leer enlace",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer enlace": {
+      "main": [
+        [
+          {
+            "node": "¿Enlace válido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Enlace válido?": {
+      "main": [
+        [
+          {
+            "node": "Actualizar estado de la cita",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Página: enlace no válido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Actualizar estado de la cita": {
+      "main": [
+        [
+          {
+            "node": "Aviso cambio de cita (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aviso cambio de cita (Telegram)": {
+      "main": [
+        [
+          {
+            "node": "Página: cita actualizada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "flowkit": {
+      "id": "clinica/recordatorio-citas",
+      "version": "1.0.0",
+      "docs": "https://github.com/mrnpvn/flowkit/blob/main/docs/FLUJO-CLINICA.md"
+    }
+  },
+  "tags": []
+}
