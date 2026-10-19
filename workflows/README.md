@@ -20,7 +20,7 @@ Pasos detallados y credenciales: [`../docs/INSTALACION-N8N.md`](../docs/INSTALAC
 | Flujo | Carpeta | Estado |
 |---|---|---|
 | Captura de leads web | `general/` | ✅ listo |
-| Alta de cliente + plazos fiscales | `asesoria/` | 🚧 |
+| Alta de cliente + plazos fiscales | `asesoria/` | ✅ listo |
 | Recordatorio de cita + recuperación | `clinica/` | 🚧 |
 | Captación de leads + respuesta automática | `inmobiliaria/` | 🚧 |
 

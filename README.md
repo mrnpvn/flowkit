@@ -25,11 +25,11 @@ FlowKit empaqueta ese trabajo en flujos probados: los importas, conectas tus cue
 | Flujo | Vertical | Estado | Archivo |
 |---|---|---|---|
 | Captura de leads web (formulario → hoja de cálculo → aviso Telegram) | General | ✅ Listo | [`workflows/general/captura-leads-web.json`](workflows/general/captura-leads-web.json) |
-| Asesoría: alta de cliente + recordatorio de plazos fiscales | Asesoría / gestoría | 🚧 En construcción | `workflows/asesoria/` |
+| Asesoría: alta de cliente + recordatorio de plazos fiscales | Asesoría / gestoría | ✅ Listo | [`workflows/asesoria/alta-cliente-plazos.json`](workflows/asesoria/alta-cliente-plazos.json) |
 | Clínica: recordatorio de cita + recuperación de cancelaciones | Clínica / dental | 🚧 En construcción | `workflows/clinica/` |
 | Inmobiliaria: captación de leads + respuesta automática | Inmobiliaria | 🚧 En construcción | `workflows/inmobiliaria/` |
 
-Cada flujo incluye su propia ficha en [`docs/CATALOGO.md`](docs/CATALOGO.md): qué hace, qué necesitas configurar, qué datos toca y cuánto tiempo ahorra.
+Cada flujo incluye su propia ficha en [`docs/CATALOGO.md`](docs/CATALOGO.md): qué hace, qué necesitas configurar, qué datos toca y cuánto tiempo ahorra. Las guías de puesta en marcha están en [`docs/`](docs/): [`INSTALACION-N8N.md`](docs/INSTALACION-N8N.md) (general) y [`FLUJO-ASESORIA.md`](docs/FLUJO-ASESORIA.md) (alta de cliente + plazos fiscales).
 
 ## Instalación (2 minutos)
 
@@ -48,7 +48,7 @@ Guía detallada, requisitos y solución de problemas: [`docs/INSTALACION-N8N.md`
 - **Inmobiliarias** — respuesta inmediata al lead del portal o de la web, reparto entre comerciales, seguimiento a los 3 y 7 días.
 - **Agencias y despachos** — captura de formularios, seguimiento de presupuestos, informes periódicos al cliente sin exportar CSV a mano.
 
-Si tu caso no está, [abre una petición](../../issues): los flujos que se piden se construyen.
+Si tu caso no está, [abre una petición](https://github.com/mrnpvn/flowkit/issues): los flujos que se piden se construyen.
 
 ## Personalización y soporte
 

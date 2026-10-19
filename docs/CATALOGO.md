@@ -19,12 +19,21 @@ Estados: **✅ listo** (probado, se puede importar ya) · **🚧 en construcció
 
 ---
 
-## 🚧 Asesoría — alta de cliente y recordatorio de plazos fiscales
+## ✅ Asesoría — alta de cliente y recordatorio de plazos fiscales
 
+- **Archivo:** `workflows/asesoria/alta-cliente-plazos.json`
+- **Guía:** [`FLUJO-ASESORIA.md`](FLUJO-ASESORIA.md)
 - **Vertical:** asesorías, gestorías, despachos contables
-- **Qué hará:** recibir los datos de un cliente nuevo (formulario o texto pegado), crear su ficha en la hoja o CRM, avisar al equipo, y programar los recordatorios de sus obligaciones periódicas (IVA, IRPF, resúmenes) para que no dependan de la memoria de nadie.
-- **Qué necesitará:** Google Sheets o Notion, Telegram o email (SMTP).
-- **Nota legal:** los avisos son **recordatorios internos de gestión**, no asesoramiento fiscal automatizado ni presentación de modelos ante la AEAT.
+- **Disparador:** formulario web (alta) + programación diaria a las 8:00 (avisos)
+- **Qué hace:**
+  1. **Alta** — el formulario recoge razón social, NIF, email, teléfono, régimen fiscal, si tiene empleados y notas → normaliza la ficha → la añade a la hoja `Clientes` → avisa al equipo por Telegram.
+  2. **Plazos** — cada mañana lee la cartera, calcula qué modelos vencen en los próximos **21 días** según el régimen y los empleados de cada cliente, y envía **un solo mensaje** con la lista ordenada por fecha. Si no hay nada próximo, no envía nada.
+- **Modelos cubiertos:** 303, 130, 131, 111, 390, 190, 347 y 100 (calendario general estatal).
+- **Qué necesitas:** una hoja de Google Sheets con las cabeceras indicadas en la guía, un bot de Telegram. n8n 1.40+.
+- **Datos personales que trata:** identificativos y de contacto de los clientes de la asesoría (nombre, NIF, email, teléfono). Base legal habitual: ejecución del contrato de servicios y obligaciones legales del despacho. El flujo corre en tu propio n8n.
+- **Ahorro estimado:** el alta deja de retipearse en dos sitios y los vencimientos dejan de depender de que alguien se acuerde de mirar el calendario. Con 40–60 clientes, el repaso manual diario son 10–15 minutos que desaparecen.
+- **Tiempo de puesta en marcha:** 20–30 minutos.
+- **Nota legal:** los avisos son **recordatorios internos de gestión**, no asesoramiento fiscal automatizado ni presentación de modelos ante la AEAT. Las fechas son las generales del calendario estatal: verifica siempre el calendario oficial y las particularidades forales (Navarra, País Vasco) antes de presentar.
 
 ## 🚧 Clínica — recordatorio de cita y recuperación de cancelaciones
 
@@ -55,3 +64,4 @@ Precio previsto: **29–79 €** según el pack. Se anunciará en este repositor
 | Fecha | Cambio |
 |---|---|
 | 2026-10-19 | Publicación del repositorio: estructura, documentación y flujo gratuito `captura-leads-web` v1. |
+| 2026-10-19 | Nuevo flujo `asesoria/alta-cliente-plazos` v1.0.0 (alta de cliente + recordatorio de 8 modelos a 21 días) + guía `FLUJO-ASESORIA.md`. |

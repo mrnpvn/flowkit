@@ -1,0 +1,409 @@
+{
+  "name": "FlowKit — Asesoría: alta de cliente + recordatorio de plazos",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## FlowKit — Asesoría\n\nEste flujo tiene **dos partes** que funcionan por separado:\n\n**A) Alta de cliente** (pestaña de formulario)\n1. El cliente o el equipo rellena el formulario.\n2. Los datos se normalizan.\n3. Se guarda una fila en la hoja `Clientes`.\n4. El equipo recibe un aviso por Telegram.\n\n**B) Recordatorio de plazos** (cada día a las 8:00)\n1. Lee la hoja `Clientes`.\n2. Calcula los modelos fiscales que vencen en los próximos **21 días** según el régimen de cada cliente.\n3. Envía **un solo mensaje** al equipo con la lista.\n\n**Configurar (4 pasos)**\n1. Crea una hoja de Google Sheets con estas columnas exactas:\n   `Nombre | NIF | Email | Telefono | Regimen | Empleados | Notas | Fecha alta | Activo`\n2. En los **dos** nodos de Google Sheets elige esa hoja.\n3. En los **dos** nodos de Telegram elige el chat del equipo.\n4. Save → Execute Workflow → prueba → Active.\n\nLos avisos son **recordatorios internos de gestión**. El flujo no presenta modelos ante la AEAT ni asesora fiscalmente.\n\nGuía completa: docs/FLUJO-ASESORIA.md",
+        "height": 620,
+        "width": 480,
+        "color": 5
+      },
+      "id": "a1b2c3d4-0001-4a01-9c01-asesoria001",
+      "name": "Léeme primero",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -760,
+        -140
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### A) Alta de cliente\nFormulario → normalizar → hoja `Clientes` → aviso al equipo.",
+        "height": 220,
+        "width": 380,
+        "color": 4
+      },
+      "id": "a1b2c3d4-0002-4a01-9c02-asesoria002",
+      "name": "Parte A — Alta",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -220,
+        -260
+      ]
+    },
+    {
+      "parameters": {
+        "content": "### B) Recordatorios diarios\nCada día a las 8:00 lee la hoja y avisa de lo que vence en 21 días.\n\nSi no hay plazos próximos, el flujo termina sin enviar nada.",
+        "height": 240,
+        "width": 400,
+        "color": 6
+      },
+      "id": "a1b2c3d4-0003-4a01-9c03-asesoria003",
+      "name": "Parte B — Plazos",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -220,
+        340
+      ]
+    },
+    {
+      "parameters": {
+        "formTitle": "Alta de cliente — asesoría",
+        "formDescription": "Rellena los datos del nuevo cliente. Los campos marcados con * son obligatorios.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Razón social o nombre",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "NIF",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Teléfono",
+              "fieldType": "text",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "Régimen fiscal",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Autónomo — estimación directa"
+                  },
+                  {
+                    "option": "Autónomo — módulos"
+                  },
+                  {
+                    "option": "Sociedad limitada"
+                  },
+                  {
+                    "option": "Particular (sin actividad)"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "¿Tiene empleados?",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Sí"
+                  },
+                  {
+                    "option": "No"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Notas",
+              "fieldType": "textarea",
+              "requiredField": false
+            }
+          ]
+        },
+        "options": {
+          "path": "flowkit-alta-cliente",
+          "appendAttribution": false
+        }
+      },
+      "id": "a1b2c3d4-0004-4a01-9c04-asesoria004",
+      "name": "Formulario alta de cliente",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -180,
+        20
+      ],
+      "webhookId": "flowkit-alta-cliente"
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "as01",
+              "name": "Nombre",
+              "value": "={{ $json[\"Razón social o nombre\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "as02",
+              "name": "NIF",
+              "value": "={{ $json[\"NIF\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "as03",
+              "name": "Email",
+              "value": "={{ $json[\"Email\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "as04",
+              "name": "Telefono",
+              "value": "={{ $json[\"Teléfono\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "as05",
+              "name": "Regimen",
+              "value": "={{ $json[\"Régimen fiscal\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "as06",
+              "name": "Empleados",
+              "value": "={{ $json[\"¿Tiene empleados?\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "as07",
+              "name": "Notas",
+              "value": "={{ $json[\"Notas\"] }}",
+              "type": "string"
+            },
+            {
+              "id": "as08",
+              "name": "Fecha alta",
+              "value": "={{ $now.toFormat('yyyy-MM-dd') }}",
+              "type": "string"
+            },
+            {
+              "id": "as09",
+              "name": "Activo",
+              "value": "Sí",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0005-4a01-9c05-asesoria005",
+      "name": "Normalizar ficha",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        100,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0006-4a01-9c06-asesoria006",
+      "name": "Guardar ficha en Clientes",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        380,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "",
+        "text": "=Nuevo cliente dado de alta\n\nNombre: {{ $json.Nombre }}\nNIF: {{ $json.NIF }}\nEmail: {{ $json.Email }}\nTeléfono: {{ $json.Telefono }}\nRégimen: {{ $json.Regimen }}\nEmpleados: {{ $json.Empleados }}\nAlta: {{ $json[\"Fecha alta\"] }}",
+        "additionalFields": {}
+      },
+      "id": "a1b2c3d4-0007-4a01-9c07-asesoria007",
+      "name": "Aviso alta (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        20
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 8,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "a1b2c3d4-0008-4a01-9c08-asesoria008",
+      "name": "Cada día a las 8:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -180,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "id": "a1b2c3d4-0009-4a01-9c09-asesoria009",
+      "name": "Leer clientes",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        100,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const DIAS_AVISO = 21;\nconst hoy = new Date();\nhoy.setHours(0, 0, 0, 0);\nconst clientes = $input.all().map(i => i.json).filter(c => /^s/i.test(String(c['Activo'] || 's')));\nconst reg = c => String(c['Regimen'] || '');\nconst emp = c => /^s/i.test(String(c['Empleados'] || ''));\nconst tieneIVA = c => /directa|m[oó]dulos|limitada|^sl/i.test(reg(c));\nconst plazos = [];\nconst add = (cod, nom, mes, dia, tri, cond) => plazos.push({ cod, nom, mes, dia, tri, cond });\nconst T = [[4, 20, '1T'], [7, 20, '2T'], [10, 20, '3T'], [1, 20, '4T']];\nfor (const [mes, dia, tri] of T) {\n  add('303', 'IVA · autoliquidación trimestral', mes, dia, tri, tieneIVA);\n  add('130', 'IRPF · pago fraccionado (estimación directa)', mes, dia, tri, c => /directa/i.test(reg(c)));\n  add('131', 'IRPF · pago fraccionado (módulos)', mes, dia, tri, c => /m[oó]dulos/i.test(reg(c)));\n  add('111', 'Retenciones del trabajo · trimestral', mes, dia, tri, emp);\n}\nadd('390', 'Resumen anual de IVA', 1, 30, 'anual', tieneIVA);\nadd('100', 'Declaración de la renta (IRPF)', 6, 30, 'anual', c => /directa/i.test(reg(c)));\nadd('190', 'Resumen anual de retenciones del trabajo', 1, 31, 'anual', emp);\nadd('347', 'Operaciones con terceros', 2, 28, 'anual', tieneIVA);\nconst avisos = [];\nfor (const c of clientes) {\n  for (const p of plazos) {\n    if (!p.cond(c)) continue;\n    for (const y of [hoy.getFullYear(), hoy.getFullYear() + 1]) {\n      const f = new Date(y, p.mes - 1, p.dia);\n      const d = Math.round((f - hoy) / 86400000);\n      if (d >= 0 && d <= DIAS_AVISO) {\n        const fecha = String(f.getDate()).padStart(2, '0') + '/' + String(f.getMonth() + 1).padStart(2, '0');\n        const cuando = d === 0 ? 'HOY' : d === 1 ? 'faltan 1 día' : 'faltan ' + d + ' días';\n        const cliente = (c['Nombre'] || 'sin nombre') + (c['NIF'] ? ' (' + c['NIF'] + ')' : '');\n        avisos.push({ f, linea: '• ' + fecha + ' · Modelo ' + p.cod + ' — ' + p.nom + ' — ' + cliente + ' — ' + cuando });\n      }\n    }\n  }\n}\nif (avisos.length === 0) return [];\navisos.sort((a, b) => a.f - b.f);\nconst texto = avisos.map(a => a.linea).join('\\n');\nreturn [{ json: { total: avisos.length, texto: texto.slice(0, 3500) } }];"
+      },
+      "id": "a1b2c3d4-0010-4a01-9c10-asesoria010",
+      "name": "Calcular plazos próximos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        380,
+        480
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "",
+        "text": "=Plazos fiscales en los próximos 21 días ({{ $json.total }})\n\n{{ $json.texto }}\n\nRecordatorio interno de gestión. Revisa el calendario oficial antes de presentar.",
+        "additionalFields": {}
+      },
+      "id": "a1b2c3d4-0011-4a01-9c11-asesoria011",
+      "name": "Aviso plazos (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        660,
+        480
+      ]
+    }
+  ],
+  "connections": {
+    "Formulario alta de cliente": {
+      "main": [
+        [
+          {
+            "node": "Normalizar ficha",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar ficha": {
+      "main": [
+        [
+          {
+            "node": "Guardar ficha en Clientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar ficha en Clientes": {
+      "main": [
+        [
+          {
+            "node": "Aviso alta (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cada día a las 8:00": {
+      "main": [
+        [
+          {
+            "node": "Leer clientes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer clientes": {
+      "main": [
+        [
+          {
+            "node": "Calcular plazos próximos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calcular plazos próximos": {
+      "main": [
+        [
+          {
+            "node": "Aviso plazos (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "flowkit": {
+      "id": "asesoria/alta-cliente-plazos",
+      "version": "1.0.0",
+      "docs": "https://github.com/mrnpvn/flowkit/blob/main/docs/FLUJO-ASESORIA.md"
+    }
+  },
+  "tags": []
+}
