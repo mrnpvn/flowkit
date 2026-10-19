@@ -1,0 +1,190 @@
+{
+  "name": "Capture web leads to Google Sheets and alert on Telegram",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Capture web leads → Google Sheets → Telegram\n\n**What this workflow does**\n1. Hosts a form on your own n8n instance.\n2. Normalizes the lead (name, email, phone, message, timestamp).\n3. Appends one row per lead to a Google Sheet.\n4. Sends a Telegram message to your team.\n\n**Setup (3 steps)**\n1. *Web form* — set your own form path and adjust the fields if needed.\n2. *Save lead to Google Sheets* — connect your Google OAuth2 credential and select the spreadsheet and sheet tab.\n3. *Telegram alert* — connect your bot (@BotFather → /newbot) and select the chat.\n\nSheet headers expected: `name`, `email`, `phone`, `message`, `received_at`.\nWhen no node shows a red triangle: **Save → Execute workflow** to test, then **Active**.\n\n**Privacy:** the form collects personal data. Publish a privacy notice and make sure you have a lawful basis before going live (GDPR).\n\nFull setup guide: github.com/mrnpvn/flowkit",
+        "height": 500,
+        "width": 440,
+        "color": 5
+      },
+      "id": "3f9a1c62-0d4e-4b7a-8c51-1a2b3c4d5e01",
+      "name": "Read me first",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [-640, -60]
+    },
+    {
+      "parameters": {
+        "formTitle": "Tell us what you need",
+        "formDescription": "Leave your details and we will get back to you within 24 hours.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Phone",
+              "fieldType": "text",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "Message",
+              "fieldType": "textarea",
+              "requiredField": false
+            }
+          ]
+        },
+        "options": {
+          "path": "flowkit-lead",
+          "appendAttribution": false
+        }
+      },
+      "id": "3f9a1c62-0d4e-4b7a-8c51-1a2b3c4d5e02",
+      "name": "Web form",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [-140, 0],
+      "webhookId": "e2b4c7d1-5a63-4f90-b8d2-6c1f0a9e7b3d"
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "en01",
+              "name": "name",
+              "value": "={{ $json[\"Name\"] || $json.name || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "en02",
+              "name": "email",
+              "value": "={{ $json[\"Email\"] || $json.email || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "en03",
+              "name": "phone",
+              "value": "={{ $json[\"Phone\"] || $json.phone || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "en04",
+              "name": "message",
+              "value": "={{ $json[\"Message\"] || $json.message || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "en05",
+              "name": "received_at",
+              "value": "={{ $now.toISO() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "3f9a1c62-0d4e-4b7a-8c51-1a2b3c4d5e03",
+      "name": "Normalize lead data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [120, 0]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {}
+        },
+        "options": {}
+      },
+      "id": "3f9a1c62-0d4e-4b7a-8c51-1a2b3c4d5e04",
+      "name": "Save lead to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [380, 0]
+    },
+    {
+      "parameters": {
+        "chatId": "",
+        "text": "=New lead from your website\n\nName: {{ $json.name }}\nEmail: {{ $json.email }}\nPhone: {{ $json.phone }}\nMessage: {{ $json.message }}\nReceived: {{ $json.received_at }}",
+        "additionalFields": {}
+      },
+      "id": "3f9a1c62-0d4e-4b7a-8c51-1a2b3c4d5e05",
+      "name": "Telegram alert",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [640, 0]
+    }
+  ],
+  "connections": {
+    "Web form": {
+      "main": [
+        [
+          {
+            "node": "Normalize lead data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize lead data": {
+      "main": [
+        [
+          {
+            "node": "Save lead to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save lead to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Telegram alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "flowkit": {
+      "id": "general/capture-web-leads-google-sheets-telegram",
+      "version": "1.0.0",
+      "docs": "https://github.com/mrnpvn/flowkit"
+    }
+  },
+  "tags": []
+}
