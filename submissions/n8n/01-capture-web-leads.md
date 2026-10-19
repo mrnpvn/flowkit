@@ -1,5 +1,9 @@
 # Envío 1 — n8n Creator Hub
 
+> **⚠️ NO subir este archivo (.md).** Este documento son solo las instrucciones.
+> **El archivo que se sube es el JSON:** [`workflows/general/capture-web-leads-google-sheets-telegram.json`](../../workflows/general/capture-web-leads-google-sheets-telegram.json)
+> URL directa: https://raw.githubusercontent.com/mrnpvn/flowkit/main/workflows/general/capture-web-leads-google-sheets-telegram.json
+
 **Plantilla:** Capture web leads to Google Sheets and alert on Telegram
 **Archivo para enviar:** [`workflows/general/capture-web-leads-google-sheets-telegram.json`](../../workflows/general/capture-web-leads-google-sheets-telegram.json)
 **Estado:** listo para envío (probado en n8n 2.43.8). Pendiente: 3 clics del titular.
