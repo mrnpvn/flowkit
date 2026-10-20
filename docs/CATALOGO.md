@@ -88,11 +88,13 @@ Estados: **✅ listo** (probado, se puede importar ya) · **🚧 en construcció
 
 Los flujos premium amplían los gratuitos: más pasos, versiones de producción (reintentos, aviso de errores, sin duplicados), panel de KPIs, guía de implantación de 30 días y plantillas de mensajes sectoriales.
 
-**FlowKit — Pack Asesoría:** 29 € de lanzamiento (20 primeras unidades) → 39 €. **Pack Completo:** 79 €. Disponible en el perfil de Gumroad de AIVANTA.
+**FlowKit — Pack Asesoría:** 29 € de lanzamiento (20 primeras unidades) → 39 €. **Pack Completo:** 79 €. A la venta en [mrnpvn.gumroad.com/l/flowkit-pack-asesoria](https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria).
+
+El pack incluye: los 3 flujos premium en `.json`, las guías de cada flujo, el plan de implantación en 30 días, las plantillas RGPD y las plantillas de mensajes editables. **Los `.json` premium no viven en este repositorio público**: aquí quedan las fichas y las guías completas para evaluarlos antes de comprar.
 
 ### Cobros vencidos — recordatorios escalonados y conciliación
 
-- **Archivo:** `workflows/asesoria/cobros-vencidos.json`
+- **Incluido en:** [FlowKit — Pack Asesoría](https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria) · 29 € de lanzamiento. El `.json` no se publica en este repositorio.
 - **Guía:** [`FLUJO-COBROS-VENCIDOS.md`](FLUJO-COBROS-VENCIDOS.md)
 - **Vertical:** asesorías, gestorías, despachos contables
 - **Disparadores:** diario 09:00 (recordatorios) + lunes 09:00 (informe de cartera) + webhook (enlace de pago) + Error Trigger
@@ -109,7 +111,7 @@ Los flujos premium amplían los gratuitos: más pasos, versiones de producción 
 
 ### Onboarding documental — checklist, recordatorios y portal del cliente
 
-- **Archivo:** `workflows/asesoria/onboarding-documental.json`
+- **Incluido en:** [FlowKit — Pack Asesoría](https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria) · 29 € de lanzamiento. El `.json` no se publica en este repositorio.
 - **Guía:** [`FLUJO-ONBOARDING-DOCUMENTAL.md`](FLUJO-ONBOARDING-DOCUMENTAL.md)
 - **Vertical:** asesorías, gestorías, despachos contables
 - **Disparadores:** 2 formularios (alta y recepción) + diario 09:00 (seguimiento) + webhook GET (portal del cliente) + lunes 09:00 (informe) + Error Trigger
@@ -128,7 +130,7 @@ Los flujos premium amplían los gratuitos: más pasos, versiones de producción 
 
 ### Panel de KPIs — cobros, expedientes y documentación en una hoja
 
-- **Archivo:** `workflows/asesoria/kpi-panel.json`
+- **Incluido en:** [FlowKit — Pack Asesoría](https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria) · 29 € de lanzamiento. El `.json` no se publica en este repositorio.
 - **Guía:** [`FLUJO-KPI-PANEL.md`](FLUJO-KPI-PANEL.md)
 - **Vertical:** asesorías, gestorías, despachos contables
 - **Disparadores:** lunes 08:00 (semanal) + ejecución manual de prueba + Error Trigger

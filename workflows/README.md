@@ -30,3 +30,5 @@ Pasos detallados y credenciales: [`../docs/INSTALACION-N8N.md`](../docs/INSTALAC
 | 💎 Panel de KPIs (cobros, expedientes y documentación) | `asesoria/` | 💎 premium |
 
 Las fichas completas (qué hace, qué datos trata, tiempo de puesta en marcha) están en [`../docs/CATALOGO.md`](../docs/CATALOGO.md).
+
+> Los flujos marcados como premium **no están en este repositorio**: se entregan dentro del [Pack Asesoría](https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria) (29 € de lanzamiento). Su documentación sí es pública en `docs/`.
