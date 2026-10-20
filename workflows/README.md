@@ -23,6 +23,7 @@ Pasos detallados y credenciales: [`../docs/INSTALACION-N8N.md`](../docs/INSTALAC
 | Captura de leads web (EN, para la librería n8n) | `general/` | ✅ listo |
 | Alta de cliente + plazos fiscales | `asesoria/` | ✅ listo |
 | Recordatorio de cita + recuperación de cancelaciones | `clinica/` | ✅ listo |
+| Appointment reminders with confirm/cancel links (EN, para la librería n8n) | `clinica/` | ✅ listo |
 | Captación de leads + respuesta automática | `inmobiliaria/` | ✅ listo |
 
 Las fichas completas (qué hace, qué datos trata, tiempo de puesta en marcha) están en [`../docs/CATALOGO.md`](../docs/CATALOGO.md).

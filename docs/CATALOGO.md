@@ -51,6 +51,20 @@ Estados: **✅ listo** (probado, se puede importar ya) · **🚧 en construcció
 - **Tiempo de puesta en marcha:** 30–40 minutos.
 - **Nota legal:** requiere consentimiento informado del paciente para los recordatorios, política de privacidad que los mencione y acceso restringido a la hoja y al chat interno. **No diagnostica, no recomienda tratamientos y no toma decisiones clínicas.** Revisa la guía (sección RGPD) antes de usarlo con datos reales.
 
+## ✅ Clinic appointments — reminders with confirm/cancel links (English)
+
+- **Archivo:** `workflows/clinica/appointment-reminders-confirm-cancel.json`
+- **Guía (EN):** [`FLOW-APPOINTMENTS-EN.md`](FLOW-APPOINTMENTS-EN.md)
+- **Vertical:** clinics, dental practices, physiotherapy, private consultations
+- **Disparador:** hosted form (booking) + daily schedule at 18:00 (reminders) + webhook (patient links)
+- **Qué hace:** same three parts as the Spanish clinic flow, rebuilt in English for the global template library — 21 nodes, 11-column `Appointments` sheet, one reminder email per patient booked for tomorrow, single team summary with `NO EMAIL` markers, status update by `ID` and a Telegram alert that includes the **freed slot** when a patient cancels.
+- **Diferencias con la versión ES:** nombres de columna, estados y textos en inglés (`Pending` / `Confirmed` / `Cancelled` / `Attended`), y los enlaces llevan también fecha y hora para que el aviso de cancelación indique el hueco exacto sin consultar la hoja.
+- **Qué necesitas:** Google Sheets, bot de Telegram, cuenta SMTP y URL pública de n8n. n8n 1.40+.
+- **Datos personales:** identificativos y de contacto + existencia de una cita (dato de salud, art. 9 RGPD). El email no incluye tratamiento ni motivo clínico.
+- **Estado:** importado y reexportado sin errores en n8n 2.43.8; enviado a la librería de plantillas de n8n el 20-oct.
+
+---
+
 ## ✅ Inmobiliaria — captación de leads y respuesta automática
 
 - **Archivo:** `workflows/inmobiliaria/captacion-leads-respuesta.json`

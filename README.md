@@ -28,8 +28,9 @@ FlowKit empaqueta ese trabajo en flujos probados: los importas, conectas tus cue
 | Asesoría: alta de cliente + recordatorio de plazos fiscales | Asesoría / gestoría | ✅ Listo | [`workflows/asesoria/alta-cliente-plazos.json`](workflows/asesoria/alta-cliente-plazos.json) |
 | Clínica: recordatorio de cita + recuperación de cancelaciones | Clínica / dental | ✅ Listo | [`workflows/clinica/recordatorio-citas.json`](workflows/clinica/recordatorio-citas.json) |
 | Inmobiliaria: captación de leads + respuesta automática | Inmobiliaria | ✅ Listo | [`workflows/inmobiliaria/captacion-leads-respuesta.json`](workflows/inmobiliaria/captacion-leads-respuesta.json) |
+| Clinic: appointment reminders with confirm/cancel links (EN) | Clinic | ✅ Ready | [`workflows/clinica/appointment-reminders-confirm-cancel.json`](workflows/clinica/appointment-reminders-confirm-cancel.json) |
 
-Cada flujo incluye su propia ficha en [`docs/CATALOGO.md`](docs/CATALOGO.md): qué hace, qué necesitas configurar, qué datos toca y cuánto tiempo ahorra. Las guías de puesta en marcha están en [`docs/`](docs/): [`INSTALACION-N8N.md`](docs/INSTALACION-N8N.md) (general), [`FLUJO-ASESORIA.md`](docs/FLUJO-ASESORIA.md) (alta de cliente + plazos fiscales), [`FLUJO-CLINICA.md`](docs/FLUJO-CLINICA.md) (recordatorios de cita + cancelaciones) y [`FLUJO-INMOBILIARIA.md`](docs/FLUJO-INMOBILIARIA.md) (captación de leads + respuesta automática).
+Cada flujo incluye su propia ficha en [`docs/CATALOGO.md`](docs/CATALOGO.md): qué hace, qué necesitas configurar, qué datos toca y cuánto tiempo ahorra. Las guías de puesta en marcha están en [`docs/`](docs/): [`INSTALACION-N8N.md`](docs/INSTALACION-N8N.md) (general), [`FLUJO-ASESORIA.md`](docs/FLUJO-ASESORIA.md) (alta de cliente + plazos fiscales), [`FLUJO-CLINICA.md`](docs/FLUJO-CLINICA.md) (recordatorios de cita + cancelaciones) y [`FLUJO-INMOBILIARIA.md`](docs/FLUJO-INMOBILIARIA.md) (captación de leads + respuesta automática). El flujo de clínica existe también en inglés, documentado en [`docs/FLOW-APPOINTMENTS-EN.md`](docs/FLOW-APPOINTMENTS-EN.md).
 
 ## Instalación (2 minutos)
 
