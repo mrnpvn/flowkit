@@ -84,11 +84,28 @@ Estados: **✅ listo** (probado, se puede importar ya) · **🚧 en construcció
 
 ---
 
-## 💎 Pack premium (en preparación)
+## 💎 Pack Asesoría (premium)
 
-Los flujos premium amplían los gratuitos: más pasos, más integraciones (Notion, Stripe, WhatsApp vía API oficial, CRM), plantillas de mensajes sectoriales, guía de implantación y soporte por correo.
+Los flujos premium amplían los gratuitos: más pasos, versiones de producción (reintentos, aviso de errores, sin duplicados), panel de KPIs, guía de implantación de 30 días y plantillas de mensajes sectoriales.
 
-Precio previsto: **29–79 €** según el pack. Se anunciará en este repositorio y en el perfil de Gumroad de AIVANTA.
+**FlowKit — Pack Asesoría:** 29 € de lanzamiento (20 primeras unidades) → 39 €. **Pack Completo:** 79 €. Disponible en el perfil de Gumroad de AIVANTA.
+
+### Cobros vencidos — recordatorios escalonados y conciliación
+
+- **Archivo:** `workflows/asesoria/cobros-vencidos.json`
+- **Guía:** [`FLUJO-COBROS-VENCIDOS.md`](FLUJO-COBROS-VENCIDOS.md)
+- **Vertical:** asesorías, gestorías, despachos contables
+- **Disparadores:** diario 09:00 (recordatorios) + lunes 09:00 (informe de cartera) + webhook (enlace de pago) + Error Trigger
+- **Qué hace:**
+  1. **Recordatorios** — lee la hoja `Facturas`, agrupa por cliente y envía **un solo correo por cliente** con sus facturas vencidas. Tres niveles: 5, 15 y 30 días. Cada nivel se envía una sola vez y nunca dos veces el mismo día.
+  2. **Informe de cartera** — cada lunes: total pendiente, tramos de antigüedad (al día, 1-30, 31-60, 61-90, +90), cinco mayores deudores y avisos de facturas sin email o con fecha inválida.
+  3. **Enlace de pago** — el cliente marca el pago en un clic, sin login; la hoja pasa a `Pagada`, el equipo recibe el aviso por Telegram y la página responde 200/400.
+  4. **Red de seguridad** — Error Trigger a Telegram con nodo y mensaje exactos, tras 3 reintentos por nodo.
+- **Qué necesitas:** hoja de Google Sheets con la pestaña `Facturas` (13 columnas, en la guía), SMTP, bot de Telegram y URL pública de n8n. n8n 1.40+.
+- **Datos personales que trata:** identificativos y de contacto del cliente y datos de facturación. Base legal: ejecución del contrato y obligaciones contables. Los correos son comunicación contractual, no marketing.
+- **Ahorro estimado:** con 40–80 facturas mensuales, el seguimiento manual son 20–30 minutos por semana y se pierden días de caja; el flujo avisa solo, en el tono correcto y sin repetir.
+- **Tiempo de puesta en marcha:** 30 minutos.
+- **Nota legal:** los textos son informativos y ofrecen aplazamiento; no se automatizan amenazas, publicación de morosidad ni cesión a terceros. Si el impago se reclama judicialmente, revísalo antes con tu asesoría legal.
 
 ---
 
@@ -100,3 +117,4 @@ Precio previsto: **29–79 €** según el pack. Se anunciará en este repositor
 | 2026-10-19 | Nuevo flujo `asesoria/alta-cliente-plazos` v1.0.0 (alta de cliente + recordatorio de 8 modelos a 21 días) + guía `FLUJO-ASESORIA.md`. |
 | 2026-10-19 | Nuevo flujo `clinica/recordatorio-citas` v1.0.0 (alta de cita + email 24 h antes + confirmar/cancelar en un clic + aviso de hueco liberado) + guía `FLUJO-CLINICA.md`. |
 | 2026-10-19 | Nuevo flujo `inmobiliaria/captacion-leads-respuesta` v1.0.0 (formulario + puntuación + emparejamiento con cartera + email al lead + reparto por zona + aviso de leads sin atender) + guía `FLUJO-INMOBILIARIA.md`. |
+| 2026-10-20 | Flujo **premium** `asesoria/cobros-vencidos` v1.0.0 (recordatorios escalonados 5/15/30 días + informe semanal de cartera + enlace de pago + Error Trigger) + guía `FLUJO-COBROS-VENCIDOS.md`. |

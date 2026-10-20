@@ -1,0 +1,836 @@
+{
+  "name": "FlowKit · Cobros vencidos — recordatorios escalonados y conciliación",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "# FlowKit · Cobros vencidos\n\nRecordatorios escalonados de facturas vencidas + conciliación en un clic + informe semanal de cartera.\n\n**Antes de activar**\n1. Crea una hoja de Google con la pestaña `Facturas` y estas columnas exactas:\n   `ID | Cliente | Email | Concepto | Importe | Fecha_Emision | Fecha_Vencimiento | Estado | Nivel | Recordatorios | Ultimo_Recordatorio | Fecha_Pago | Notas`\n2. `Estado` admite `Pendiente`, `Pagada` o `Incobrable`. `Nivel` y `Recordatorios` se rellenan solos.\n3. Importes en formato español (`1.234,56`) o con punto decimal. Fechas `dd/mm/aaaa` o `aaaa-mm-dd`.\n4. Abre el nodo **Clasificar cartera** y cambia `BASE_URL`, `EMPRESA` e `IBAN`.\n5. Conecta las credenciales: Google Sheets, SMTP, Telegram (4 nodos).\n6. Activa el flujo. Prueba primero con una factura de prueba tuya.\n\n**Escalado:** nivel 1 a los 5 días, nivel 2 a los 15, nivel 3 a los 30. Cada nivel se envía una sola vez por factura (no hay spam) y nunca dos veces el mismo día.",
+        "height": 380,
+        "width": 460,
+        "color": 4
+      },
+      "id": "c0b4a000-0001-4a01-9c07-flowkit101",
+      "name": "Léeme primero",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        -480
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Parte A · Recordatorios (cada día, 09:00)\n\nLee la hoja, agrupa por cliente y envía **un solo correo por cliente** con todas sus facturas vencidas del tramo que toque. Después marca en la hoja el nivel y la fecha del último recordatorio (así no se repite).\n\nSi un correo falla, la fila **no** se marca y se reintenta al día siguiente (el nodo no corta el resto del lote).",
+        "height": 240,
+        "width": 460,
+        "color": 5
+      },
+      "id": "c0b4a000-0002-4a01-9c07-flowkit101",
+      "name": "Parte A · Recordatorios",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        -60
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Parte B · Informe de cartera (lunes, 09:00)\n\nResumen para el despacho: total pendiente, tramos de antigüedad (al día, 1-30, 31-60, 61-90, +90), cinco mayores deudores y avisos de datos incompletos (facturas sin email o con fecha inválida).",
+        "height": 220,
+        "width": 460,
+        "color": 6
+      },
+      "id": "c0b4a000-0003-4a01-9c07-flowkit101",
+      "name": "Parte B · Informe de cartera",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        360
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Parte C · Enlace «marcar como pagada»\n\nCada correo incluye un enlace con las facturas de ese cliente. Al abrirlo, el cliente marca el pago sin login y el equipo recibe el aviso al instante.\n\nEl parámetro `k` actúa como clave del enlace: usa IDs con sufijo aleatorio (por ejemplo `F-2026-0142-8kd3`) para que no se puedan adivinar. Responde 200 si el enlace es válido y 400 si no.",
+        "height": 260,
+        "width": 460,
+        "color": 7
+      },
+      "id": "c0b4a000-0004-4a01-9c07-flowkit101",
+      "name": "Parte C · Enlace de pago",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        720
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Parte D · Red de seguridad\n\nSi cualquier nodo falla de forma definitiva (tras 3 reintentos), el Error Trigger avisa por Telegram con el nodo y el mensaje exactos. Nada falla en silencio.",
+        "height": 200,
+        "width": 460,
+        "color": 3
+      },
+      "id": "c0b4a000-0005-4a01-9c07-flowkit101",
+      "name": "Parte D · Errores",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -500,
+        1140
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 9,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "c0b4a100-0001-4a01-9c07-flowkit101",
+      "name": "Cada día a las 09:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        20,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "id": "c0b4a100-0002-4a01-9c07-flowkit101",
+      "name": "Leer facturas",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        240,
+        -20
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "jsCode": "// FlowKit · Cobros vencidos — Parte A (clasificación y redacción)\n// Ajusta estas constantes antes de activar el flujo.\nconst BASE_URL = 'https://TU-N8N.example.com';\nconst EMPRESA = 'Tu asesoría';\nconst IBAN = 'ES00 0000 0000 0000 0000 0000';\nconst DIAS_NIVEL1 = 5;\nconst DIAS_NIVEL2 = 15;\nconst DIAS_NIVEL3 = 30;\nconst LINK_PATH = '/webhook/flowkit-cobro';\n\nconst NL = String.fromCharCode(10);\nconst HOY = new Date();\nHOY.setHours(0, 0, 0, 0);\nconst HOY_ISO = iso(HOY);\n\nfunction pad(n) { return (n < 10 ? '0' : '') + n; }\nfunction iso(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }\nfunction fecha(d) { return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); }\nfunction mk(y, m, d) {\n  const dt = new Date(y, m - 1, d);\n  if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d) return null;\n  return dt;\n}\nfunction parseDate(v) {\n  if (!v) return null;\n  if (v instanceof Date) return isNaN(v.getTime()) ? null : new Date(v.getFullYear(), v.getMonth(), v.getDate());\n  let s = String(v).trim();\n  if (!s) return null;\n  if (s.length >= 10 && s.charAt(4) === '-') s = s.slice(0, 10);\n  let p = s.split('/');\n  if (p.length === 3) return mk(Number(p[2]), Number(p[1]), Number(p[0]));\n  p = s.split('-');\n  if (p.length === 3) {\n    if (p[0].length === 4) return mk(Number(p[0]), Number(p[1]), Number(p[2]));\n    return mk(Number(p[2]), Number(p[1]), Number(p[0]));\n  }\n  const d4 = new Date(s);\n  return isNaN(d4.getTime()) ? null : d4;\n}\nfunction parseAmount(v) {\n  let s = String(v === null || v === undefined ? '' : v).trim();\n  if (!s) return 0;\n  s = s.replace(/[^0-9.,\\-]/g, '');\n  if (s.indexOf(',') >= 0) {\n    s = s.replace(/\\./g, '').replace(/,/g, '.');\n  } else if (s.indexOf('.') >= 0) {\n    const p = s.split('.');\n    if (p.length > 2 || p[1].length === 3) s = p.join('');\n  }\n  const n = Number(s);\n  return isNaN(n) ? 0 : n;\n}\nfunction norm(s) { return String(s === null || s === undefined ? '' : s).trim().toLowerCase(); }\nfunction val(row, names) {\n  const keys = Object.keys(row);\n  for (let i = 0; i < names.length; i++) {\n    for (let j = 0; j < keys.length; j++) {\n      if (norm(keys[j]) === norm(names[i])) {\n        const v = row[keys[j]];\n        return v === null || v === undefined ? '' : v;\n      }\n    }\n  }\n  return '';\n}\nfunction money(n) { return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(n || 0); }\nfunction parrafo(nivel, dias, importe) {\n  if (nivel >= 3) return 'El importe sigue pendiente ' + dias + ' días después del vencimiento. Te pedimos que lo regularices esta semana; si ya lo has pagado, avísanos para cuadrar la contabilidad. Si no podemos confirmar el pago, nos pondremos en contacto para acordar un aplazamiento.';\n  if (nivel === 2) return 'Han pasado ' + dias + ' días desde el vencimiento y no consta el pago. Te agradeceríamos que nos indicaras la fecha prevista de pago o que realizaras la transferencia con los datos de abajo.';\n  return 'El importe de ' + importe + ' venció hace ' + dias + ' días y todavía no consta en nuestra cuenta. Si ya lo has pagado, ignora este mensaje: los pagos pueden tardar un par de días en reflejarse.';\n}\n\nconst rows = $input.all().map(function (i) { return i.json; });\nconst grupos = new Map();\n\nfor (const row of rows) {\n  if (norm(val(row, ['Estado'])) !== 'pendiente') continue;\n  const venc = parseDate(val(row, ['Fecha_Vencimiento', 'Fecha Vencimiento', 'Vencimiento']));\n  if (!venc) continue;\n  const dias = Math.floor((HOY.getTime() - venc.getTime()) / 86400000);\n  let nivel = 0;\n  if (dias >= DIAS_NIVEL3) nivel = 3;\n  else if (dias >= DIAS_NIVEL2) nivel = 2;\n  else if (dias >= DIAS_NIVEL1) nivel = 1;\n  if (nivel === 0) continue;\n  const nivelActual = Number(val(row, ['Nivel'])) || 0;\n  if (nivel <= nivelActual) continue;\n  const ultimo = parseDate(val(row, ['Ultimo_Recordatorio', 'Último recordatorio']));\n  if (ultimo && iso(ultimo) === HOY_ISO) continue;\n  const email = String(val(row, ['Email', 'Correo'])).trim();\n  if (!email || email.indexOf('@') < 1) continue;\n  const id = String(val(row, ['ID', 'Id'])).trim();\n  if (!id) continue;\n  const importe = parseAmount(val(row, ['Importe', 'Total']));\n  const cliente = String(val(row, ['Cliente', 'Razón social', 'Razon social'])).trim() || email;\n  const concepto = String(val(row, ['Concepto', 'Descripción', 'Descripcion'])).trim() || 'Servicios profesionales';\n  const recordatorios = Number(val(row, ['Recordatorios'])) || 0;\n  const key = email.toLowerCase();\n  if (!grupos.has(key)) {\n    grupos.set(key, { to: email, email: email, cliente: cliente, facturas: [], importeTotal: 0, nivelMax: 0, diasMax: 0 });\n  }\n  const g = grupos.get(key);\n  g.facturas.push({ ID: id, concepto: concepto, importe: importe, importeFmt: money(importe), vencimiento: fecha(venc), dias: dias, nivel: nivel, recordatorios: recordatorios });\n  g.importeTotal += importe;\n  if (nivel > g.nivelMax) g.nivelMax = nivel;\n  if (dias > g.diasMax) g.diasMax = dias;\n}\n\nconst salida = [];\nfor (const g of grupos.values()) {\n  const lineas = [];\n  lineas.push('Hola ' + g.cliente + ':');\n  lineas.push('');\n  lineas.push('Te escribimos de ' + EMPRESA + ' en relación con ' + (g.facturas.length === 1 ? 'esta factura' : 'estas facturas') + ':');\n  lineas.push('');\n  for (const f of g.facturas) {\n    lineas.push('· ' + f.ID + ' — ' + f.concepto);\n    lineas.push('  Importe: ' + f.importeFmt + ' · vencimiento: ' + f.vencimiento + ' (' + f.dias + ' días)');\n  }\n  lineas.push('');\n  lineas.push('Total pendiente: ' + money(g.importeTotal));\n  lineas.push('');\n  lineas.push(parrafo(g.nivelMax, g.diasMax, money(g.importeTotal)));\n  lineas.push('');\n  const ids = g.facturas.map(function (f) { return f.ID; });\n  lineas.push('Puedes marcar el pago como realizado en un clic (marca ' + (ids.length === 1 ? 'la factura' : 'las ' + ids.length + ' facturas') + ' del listado):');\n  lineas.push(BASE_URL + LINK_PATH + '?ids=' + encodeURIComponent(ids.join(',')) + '&k=' + encodeURIComponent(ids[0]));\n  lineas.push('');\n  lineas.push('Datos para la transferencia:');\n  lineas.push('IBAN: ' + IBAN);\n  lineas.push('Beneficiario: ' + EMPRESA);\n  lineas.push('Referencia: ' + ids.join(' / '));\n  lineas.push('');\n  lineas.push('Si ya has realizado el pago, ignora este mensaje: el enlace también sirve para dejarlo registrado.');\n  lineas.push('');\n  lineas.push('Un saludo,');\n  lineas.push(EMPRESA);\n  const subject = g.facturas.length === 1\n    ? 'Factura ' + g.facturas[0].ID + ' — vencida el ' + g.facturas[0].vencimiento + ' (' + g.facturas[0].dias + ' días)'\n    : g.facturas.length + ' facturas pendientes — ' + money(g.importeTotal);\n  salida.push({ json: {\n    to: g.to,\n    cliente: g.cliente,\n    subject: subject,\n    body: lineas.join(NL),\n    nivel: g.nivelMax,\n    facturas: g.facturas,\n    nFacturas: g.facturas.length,\n    importeTotal: g.importeTotal,\n    importeFmt: money(g.importeTotal),\n    hoy: HOY_ISO,\n    hoyFmt: fecha(HOY)\n  } });\n}\nreturn salida;"
+      },
+      "id": "c0b4a100-0003-4a01-9c07-flowkit101",
+      "name": "Clasificar cartera",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "",
+        "toEmail": "={{ $json.to }}",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "text",
+        "text": "={{ $json.body }}",
+        "options": {}
+      },
+      "id": "c0b4a100-0004-4a01-9c07-flowkit101",
+      "name": "Email de recordatorio",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        680,
+        -20
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "// FlowKit · Cobros vencidos — una fila de hoja por factura recordada\nconst clientes = $input.all().map(function (i) { return i.json; });\nconst out = [];\nfor (const c of clientes) {\n  for (const f of c.facturas) {\n    out.push({ json: {\n      ID: f.ID,\n      Nivel: String(f.nivel),\n      Recordatorios: String((Number(f.recordatorios) || 0) + 1),\n      Ultimo_Recordatorio: c.hoy\n    } });\n  }\n}\nreturn out;"
+      },
+      "id": "c0b4a100-0005-4a01-9c07-flowkit101",
+      "name": "Preparar actualizaciones",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Nivel": "={{ $json.Nivel }}",
+            "Recordatorios": "={{ $json.Recordatorios }}",
+            "Ultimo_Recordatorio": "={{ $json.Ultimo_Recordatorio }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "c0b4a100-0006-4a01-9c07-flowkit101",
+      "name": "Marcar recordatorio enviado",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1120,
+        -20
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "jsCode": "// FlowKit · Cobros vencidos — resumen del día para el equipo\nconst clientes = $('Clasificar cartera').all().map(function (i) { return i.json; });\nconst NL = String.fromCharCode(10);\nlet importe = 0;\nlet facturas = 0;\nconst porNivel = { 1: 0, 2: 0, 3: 0 };\nfor (const c of clientes) {\n  importe += c.importeTotal;\n  facturas += c.nFacturas;\n  porNivel[c.nivel] = (porNivel[c.nivel] || 0) + 1;\n}\nfunction money(n) { return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(n || 0); }\nconst orden = clientes.slice().sort(function (a, b) { return b.importeTotal - a.importeTotal; });\nconst lineas = [];\nlineas.push('Cobros · ' + (clientes[0] ? clientes[0].hoyFmt : ''));\nlineas.push(clientes.length + ' clientes · ' + facturas + ' facturas · ' + money(importe) + ' reclamado');\nlineas.push('Nivel 1: ' + porNivel[1] + ' · Nivel 2: ' + porNivel[2] + ' · Nivel 3: ' + porNivel[3]);\nlineas.push('');\nfor (const c of orden.slice(0, 10)) {\n  lineas.push('· ' + c.cliente + ' — ' + c.importeFmt + ' (' + c.nFacturas + (c.nFacturas === 1 ? ' factura' : ' facturas') + ', nivel ' + c.nivel + ')');\n}\nif (orden.length > 10) lineas.push('… y ' + (orden.length - 10) + ' clientes más');\nreturn [{ json: { text: lineas.join(NL) } }];"
+      },
+      "id": "c0b4a100-0007-4a01-9c07-flowkit101",
+      "name": "Resumen del día",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1340,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "id": "c0b4a100-0008-4a01-9c07-flowkit101",
+      "name": "Resumen de cobros (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1560,
+        -20
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "weeksInterval": 1,
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 9,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "c0b4b100-0001-4a01-9c07-flowkit101",
+      "name": "Cada lunes a las 09:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        20,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "id": "c0b4b100-0002-4a01-9c07-flowkit101",
+      "name": "Leer facturas (informe)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        240,
+        420
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "jsCode": "// FlowKit · Cobros vencidos — informe semanal de cartera\nconst NL = String.fromCharCode(10);\nconst HOY = new Date();\nHOY.setHours(0, 0, 0, 0);\nfunction pad(n) { return (n < 10 ? '0' : '') + n; }\nfunction fecha(d) { return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); }\nfunction parseDate(v) {\n  if (!v) return null;\n  if (v instanceof Date) return isNaN(v.getTime()) ? null : new Date(v.getFullYear(), v.getMonth(), v.getDate());\n  let s = String(v).trim();\n  if (!s) return null;\n  if (s.length >= 10 && s.charAt(4) === '-') s = s.slice(0, 10);\n  let p = s.split('/');\n  if (p.length === 3) return mk(Number(p[2]), Number(p[1]), Number(p[0]));\n  p = s.split('-');\n  if (p.length === 3) return mk(Number(p[0]), Number(p[1]), Number(p[2]));\n  const d3 = new Date(s);\n  return isNaN(d3.getTime()) ? null : d3;\n}\nfunction mk(y, m, d) {\n  const dt = new Date(y, m - 1, d);\n  if (dt.getFullYear() !== y || dt.getMonth() !== m - 1 || dt.getDate() !== d) return null;\n  return dt;\n}\nfunction parseAmount(v) {\n  let s = String(v === null || v === undefined ? '' : v).trim();\n  if (!s) return 0;\n  s = s.replace(/[^0-9.,\\-]/g, '');\n  if (s.indexOf(',') >= 0) {\n    s = s.replace(/\\./g, '').replace(/,/g, '.');\n  } else if (s.indexOf('.') >= 0) {\n    const p = s.split('.');\n    if (p.length > 2 || p[1].length === 3) s = p.join('');\n  }\n  const n = Number(s);\n  return isNaN(n) ? 0 : n;\n}\nfunction norm(s) { return String(s === null || s === undefined ? '' : s).trim().toLowerCase(); }\nfunction val(row, names) {\n  const keys = Object.keys(row);\n  for (let i = 0; i < names.length; i++) {\n    for (let j = 0; j < keys.length; j++) {\n      if (norm(keys[j]) === norm(names[i])) { const v = row[keys[j]]; return v === null || v === undefined ? '' : v; }\n    }\n  }\n  return '';\n}\nfunction money(n) { return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(n || 0); }\nconst rows = $input.all().map(function (i) { return i.json; });\nconst b = { alDia: [0, 0], d1: [0, 0], d2: [0, 0], d3: [0, 0], d4: [0, 0] };\nconst deudores = new Map();\nlet sinEmail = 0;\nlet sinFecha = 0;\nlet total = 0;\nlet n = 0;\nfor (const row of rows) {\n  if (norm(val(row, ['Estado'])) !== 'pendiente') continue;\n  n++;\n  const importe = parseAmount(val(row, ['Importe', 'Total']));\n  total += importe;\n  if (String(val(row, ['Email'])).indexOf('@') < 1) sinEmail++;\n  const venc = parseDate(val(row, ['Fecha_Vencimiento', 'Fecha Vencimiento', 'Vencimiento']));\n  if (!venc) { sinFecha++; continue; }\n  const dias = Math.floor((HOY.getTime() - venc.getTime()) / 86400000);\n  let bucket = 'alDia';\n  if (dias > 90) bucket = 'd4';\n  else if (dias > 60) bucket = 'd3';\n  else if (dias > 30) bucket = 'd2';\n  else if (dias > 0) bucket = 'd1';\n  b[bucket][0] += 1;\n  b[bucket][1] += importe;\n  const cliente = String(val(row, ['Cliente', 'Razón social', 'Razon social'])).trim() || '(sin nombre)';\n  if (dias > 0) {\n    if (!deudores.has(cliente)) deudores.set(cliente, { importe: 0, facturas: 0, maxDias: 0 });\n    const d = deudores.get(cliente);\n    d.importe += importe;\n    d.facturas++;\n    if (dias > d.maxDias) d.maxDias = dias;\n  }\n}\nconst lineas = [];\nlineas.push('Cartera pendiente · ' + fecha(HOY));\nlineas.push(n + ' facturas · ' + money(total));\nlineas.push('');\nlineas.push('Al día: ' + b.alDia[0] + ' · ' + money(b.alDia[1]));\nlineas.push('1-30 días: ' + b.d1[0] + ' · ' + money(b.d1[1]));\nlineas.push('31-60 días: ' + b.d2[0] + ' · ' + money(b.d2[1]));\nlineas.push('61-90 días: ' + b.d3[0] + ' · ' + money(b.d3[1]));\nlineas.push('+90 días: ' + b.d4[0] + ' · ' + money(b.d4[1]));\nlineas.push('');\nconst top = Array.from(deudores.entries()).sort(function (a, c) { return c[1].importe - a[1].importe; }).slice(0, 5);\nif (top.length) {\n  lineas.push('Mayores deudores:');\n  for (const t of top) lineas.push('· ' + t[0] + ' — ' + money(t[1].importe) + ' (' + t[1].facturas + (t[1].facturas === 1 ? ' factura, ' : ' facturas, ') + t[1].maxDias + ' días)');\n} else {\n  lineas.push('Sin facturas vencidas.');\n}\nif (sinEmail || sinFecha) {\n  lineas.push('');\n  if (sinEmail) lineas.push('Revisar: ' + sinEmail + (sinEmail === 1 ? ' factura sin email (no recibe recordatorio).' : ' facturas sin email (no reciben recordatorio).'));\n  if (sinFecha) lineas.push('Revisar: ' + sinFecha + (sinFecha === 1 ? ' factura con fecha de vencimiento inválida.' : ' facturas con fecha de vencimiento inválida.'));\n}\nreturn [{ json: { text: lineas.join(NL) } }];"
+      },
+      "id": "c0b4b100-0003-4a01-9c07-flowkit101",
+      "name": "Informe de cartera",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "id": "c0b4b100-0004-4a01-9c07-flowkit101",
+      "name": "Informe semanal (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        680,
+        420
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "httpMethod": "GET",
+        "path": "flowkit-cobro",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "c0b4c100-0001-4a01-9c07-flowkit101",
+      "name": "Webhook pago",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        20,
+        780
+      ],
+      "webhookId": "flowkit-cobro"
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "id": "c0b4c100-0002-4a01-9c07-flowkit101",
+      "name": "Leer facturas (pago)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        240,
+        780
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "jsCode": "// FlowKit · Cobros vencidos — validación del enlace de pago\nconst NL = String.fromCharCode(10);\nconst HOY = new Date();\nHOY.setHours(0, 0, 0, 0);\nfunction pad(n) { return (n < 10 ? '0' : '') + n; }\nfunction iso(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }\nfunction fecha(d) { return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + '/' + d.getFullYear(); }\nfunction norm(s) { return String(s === null || s === undefined ? '' : s).trim().toLowerCase(); }\nfunction money(n) { return new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(n || 0); }\nfunction parseAmount(v) {\n  let s = String(v === null || v === undefined ? '' : v).trim();\n  if (!s) return 0;\n  s = s.replace(/[^0-9.,\\-]/g, '');\n  if (s.indexOf(',') >= 0) {\n    s = s.replace(/\\./g, '').replace(/,/g, '.');\n  } else if (s.indexOf('.') >= 0) {\n    const p = s.split('.');\n    if (p.length > 2 || p[1].length === 3) s = p.join('');\n  }\n  const n = Number(s);\n  return isNaN(n) ? 0 : n;\n}\nfunction page(titulo, texto, color) {\n  return '<!doctype html><html lang=\"es\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><title>' + titulo + '</title></head>' +\n    '<body style=\"margin:0;font-family:-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#f6f7f9;color:#1c2430\">' +\n    '<div style=\"max-width:560px;margin:12vh auto;background:#fff;border-radius:14px;padding:36px;border-top:6px solid ' + color + ';box-shadow:0 6px 24px rgba(0,0,0,.08)\">' +\n    '<h1 style=\"font-size:22px;margin:0 0 12px\">' + titulo + '</h1><p style=\"font-size:16px;line-height:1.55;margin:0\">' + texto + '</p>' +\n    '<p style=\"font-size:13px;color:#6b7686;margin-top:24px\">FlowKit · gestión de cobros</p></div></body></html>';\n}\nconst q = $('Webhook pago').first().json.query || {};\nconst raw = String(q.ids || q.id || '').trim();\nconst k = String(q.k || '').trim();\nconst ids = raw.split(',').map(function (s) { return s.trim(); }).filter(function (s) { return s.length > 0; });\nconst rows = $input.all().map(function (i) { return i.json; });\nconst hoy = iso(HOY);\nif (!ids.length) {\n  return [{ json: { ok: false, html: page('Enlace no válido', 'Falta el identificador de la factura. Copia el enlace completo del correo de recordatorio.', '#c0392b') } }];\n}\nconst encontradas = [];\nfor (const id of ids) {\n  const row = rows.find(function (r) { return norm(r.ID) === norm(id); });\n  if (!row) continue;\n  const estado = norm(row.Estado);\n  if (estado !== 'pendiente' && estado !== 'pagada') continue;\n  encontradas.push({ row: row, id: String(row.ID).trim(), estado: estado, importe: parseAmount(row.Importe), cliente: String(row.Cliente || '').trim(), yaPagada: estado === 'pagada' });\n}\nif (!encontradas.length) {\n  return [{ json: { ok: false, html: page('Enlace no válido', 'No encontramos ninguna factura pendiente con ese identificador. Si el enlace viene de un correo antiguo, escríbenos y lo revisamos.', '#c0392b') } }];\n}\nif (k && norm(k) !== norm(encontradas[0].id)) {\n  return [{ json: { ok: false, html: page('Enlace no válido', 'La clave del enlace no coincide con la factura. Usa el enlace original del correo.', '#c0392b') } }];\n}\nconst nuevas = encontradas.filter(function (e) { return !e.yaPagada; });\nconst totalNuevas = nuevas.reduce(function (a, e) { return a + e.importe; }, 0);\nconst totalTodas = encontradas.reduce(function (a, e) { return a + e.importe; }, 0);\nconst lista = encontradas.map(function (e) { return e.id; }).join(', ');\nconst texto = nuevas.length\n  ? 'Hemos registrado el pago de ' + nuevas.length + (nuevas.length === 1 ? ' factura' : ' facturas') + ' por ' + money(totalNuevas) + ' (' + lista + '). Gracias: actualizaremos tu cuenta y no recibirás más recordatorios de estos importes.'\n  : 'Estas facturas ya constaban como pagadas (' + lista + ', ' + money(totalTodas) + '). No hace falta que hagas nada más.';\nconst alerta = [];\nalerta.push((nuevas.length ? 'Cobro confirmado' : 'Pago ya registrado') + ' · ' + encontradas[0].cliente);\nalerta.push((nuevas.length ? nuevas.length : encontradas.length) + (nuevas.length === 1 ? ' factura' : ' facturas') + ' · ' + money(nuevas.length ? totalNuevas : totalTodas));\nalerta.push('IDs: ' + lista);\nalerta.push('Fecha: ' + fecha(HOY));\nreturn [{ json: {\n  ok: true,\n  ids: encontradas.map(function (e) { return e.id; }),\n  hoy: hoy,\n  html: page(nuevas.length ? 'Pago registrado' : 'Pago ya registrado', texto, '#1f8a4c'),\n  alert: alerta.join(NL)\n} }];"
+      },
+      "id": "c0b4c100-0003-4a01-9c07-flowkit101",
+      "name": "Validar enlace de pago",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        460,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "flowkit-cobro-if",
+              "leftValue": "={{ $json.ok }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c0b4c100-0004-4a01-9c07-flowkit101",
+      "name": "¿Enlace válido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        680,
+        780
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// FlowKit · Cobros vencidos — filas a actualizar tras confirmar el pago\nconst v = $('Validar enlace de pago').first().json;\nreturn v.ids.map(function (id) {\n  return { json: { ID: id, Estado: 'Pagada', Fecha_Pago: v.hoy } };\n});"
+      },
+      "id": "c0b4c100-0005-4a01-9c07-flowkit101",
+      "name": "Preparar pagos",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        900,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Estado": "={{ $json.Estado }}",
+            "Fecha_Pago": "={{ $json.Fecha_Pago }}"
+          },
+          "matchingColumns": [
+            "ID"
+          ],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "c0b4c100-0006-4a01-9c07-flowkit101",
+      "name": "Marcar como pagada",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        1120,
+        700
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "chatId": "",
+        "text": "={{ $('Validar enlace de pago').first().json.alert }}",
+        "additionalFields": {}
+      },
+      "id": "c0b4c100-0007-4a01-9c07-flowkit101",
+      "name": "Aviso de cobro (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1340,
+        700
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $('Validar enlace de pago').first().json.html }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "id": "c0b4c100-0008-4a01-9c07-flowkit101",
+      "name": "Página: pago registrado",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        1560,
+        700
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $('Validar enlace de pago').first().json.html }}",
+        "options": {
+          "responseCode": 400,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "text/html; charset=utf-8"
+              }
+            ]
+          }
+        }
+      },
+      "id": "c0b4c100-0009-4a01-9c07-flowkit101",
+      "name": "Página: enlace no válido",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        900,
+        900
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "c0b4d100-0001-4a01-9c07-flowkit101",
+      "name": "Si algo falla",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [
+        20,
+        1200
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "// FlowKit · Cobros vencidos — aviso de error al equipo\nconst NL = String.fromCharCode(10);\nconst e = $json;\nconst lineas = [];\nlineas.push('⚠️ FlowKit · error en «' + (e.workflow && e.workflow.name ? e.workflow.name : 'cobros vencidos') + '»');\nlineas.push('Nodo: ' + (e.execution && e.execution.lastNodeExecuted ? e.execution.lastNodeExecuted : 'desconocido'));\nlineas.push('Error: ' + (e.execution && e.execution.error && e.execution.error.message ? e.execution.error.message : 'sin detalle'));\nif (e.execution && e.execution.url) lineas.push('Ejecución: ' + e.execution.url);\nreturn [{ json: { text: lineas.join(NL) } }];"
+      },
+      "id": "c0b4d100-0002-4a01-9c07-flowkit101",
+      "name": "Redactar aviso de error",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        1200
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "",
+        "text": "={{ $json.text }}",
+        "additionalFields": {}
+      },
+      "id": "c0b4d100-0003-4a01-9c07-flowkit101",
+      "name": "Aviso de error (Telegram)",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        460,
+        1200
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000
+    }
+  ],
+  "connections": {
+    "Cada día a las 09:00": {
+      "main": [
+        [
+          {
+            "node": "Leer facturas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Leer facturas": {
+      "main": [
+        [
+          {
+            "node": "Clasificar cartera",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Clasificar cartera": {
+      "main": [
+        [
+          {
+            "node": "Email de recordatorio",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Email de recordatorio": {
+      "main": [
+        [
+          {
+            "node": "Preparar actualizaciones",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Preparar actualizaciones": {
+      "main": [
+        [
+          {
+            "node": "Marcar recordatorio enviado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Marcar recordatorio enviado": {
+      "main": [
+        [
+          {
+            "node": "Resumen del día",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Resumen del día": {
+      "main": [
+        [
+          {
+            "node": "Resumen de cobros (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Cada lunes a las 09:00": {
+      "main": [
+        [
+          {
+            "node": "Leer facturas (informe)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Leer facturas (informe)": {
+      "main": [
+        [
+          {
+            "node": "Informe de cartera",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Informe de cartera": {
+      "main": [
+        [
+          {
+            "node": "Informe semanal (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Webhook pago": {
+      "main": [
+        [
+          {
+            "node": "Leer facturas (pago)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Leer facturas (pago)": {
+      "main": [
+        [
+          {
+            "node": "Validar enlace de pago",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Validar enlace de pago": {
+      "main": [
+        [
+          {
+            "node": "¿Enlace válido?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "¿Enlace válido?": {
+      "main": [
+        [
+          {
+            "node": "Preparar pagos",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Página: enlace no válido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar pagos": {
+      "main": [
+        [
+          {
+            "node": "Marcar como pagada",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Marcar como pagada": {
+      "main": [
+        [
+          {
+            "node": "Aviso de cobro (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Aviso de cobro (Telegram)": {
+      "main": [
+        [
+          {
+            "node": "Página: pago registrado",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Si algo falla": {
+      "main": [
+        [
+          {
+            "node": "Redactar aviso de error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Redactar aviso de error": {
+      "main": [
+        [
+          {
+            "node": "Aviso de error (Telegram)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "Europe/Madrid"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "flowkit": {
+      "id": "asesoria/cobros-vencidos",
+      "version": "1.0.0",
+      "pack": "FlowKit — Pack Asesoría",
+      "docs": "https://github.com/mrnpvn/flowkit/blob/main/docs/FLUJO-COBROS-VENCIDOS.md"
+    }
+  }
+}
