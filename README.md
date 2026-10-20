@@ -45,7 +45,7 @@ Guía detallada, requisitos y solución de problemas: [`docs/INSTALACION-N8N.md`
 
 - **Asesorías y gestorías** — alta de cliente sin retipear datos, avisos automáticos de plazos (IVA, IRPF, modelos), registro de documentos recibidos.
 - **Clínicas y dentales** — recordatorio de cita 24 h antes, recuperación de huecos por cancelación, confirmación por el propio paciente.
-- **Inmobiliarias** — respuesta inmediata al lead del portal o de la web, reparto entre comerciales, seguimiento a los 3 y 7 días.
+- **Inmobiliarias** — respuesta inmediata al lead de la web, emparejamiento con la cartera, reparto entre comerciales y aviso de leads sin atender.
 - **Agencias y despachos** — captura de formularios, seguimiento de presupuestos, informes periódicos al cliente sin exportar CSV a mano.
 
 Si tu caso no está, [abre una petición](https://github.com/mrnpvn/flowkit/issues): los flujos que se piden se construyen.
