@@ -107,6 +107,25 @@ Los flujos premium amplían los gratuitos: más pasos, versiones de producción 
 - **Tiempo de puesta en marcha:** 30 minutos.
 - **Nota legal:** los textos son informativos y ofrecen aplazamiento; no se automatizan amenazas, publicación de morosidad ni cesión a terceros. Si el impago se reclama judicialmente, revísalo antes con tu asesoría legal.
 
+### Onboarding documental — checklist, recordatorios y portal del cliente
+
+- **Archivo:** `workflows/asesoria/onboarding-documental.json`
+- **Guía:** [`FLUJO-ONBOARDING-DOCUMENTAL.md`](FLUJO-ONBOARDING-DOCUMENTAL.md)
+- **Vertical:** asesorías, gestorías, despachos contables
+- **Disparadores:** 2 formularios (alta y recepción) + diario 09:00 (seguimiento) + webhook GET (portal del cliente) + lunes 09:00 (informe) + Error Trigger
+- **Qué hace:**
+  1. **Alta con checklist automática** — formulario → detección de duplicados por email → checklist según servicio (fiscal, laboral, constitución, contable o a medida) → una fila por documento en `Docs` + una fila por cliente en `Onboarding` → email con la checklist y enlace privado → aviso al equipo con el ID de cada documento.
+  2. **Seguimiento en 4 escalones** — a los 3, 7, 14 y 21 días, un solo correo por cliente con lo que falta. Cada nivel se envía una sola vez y nunca dos el mismo día.
+  3. **Portal del cliente** — enlace privado con el progreso (recibido / pendiente / obligatorio). Solo lectura: no permite subir ni modificar nada.
+  4. **Registrar recepción** — el equipo marca los documentos recibidos con el ID o el código; el flujo recalcula el porcentaje y, al 100 %, avisa y envía el correo de alta completada.
+  5. **Informe semanal** — expedientes abiertos, completados, tasa de finalización, antigüedad media, bloqueados a +21 días y los documentos que más se atascan.
+  6. **Red de seguridad** — reintentos 3× en todos los nodos externos, salida de error propia en los emails (un fallo no bloquea el lote) y Error Trigger a Telegram.
+- **Qué necesitas:** hoja de Google con las pestañas `Docs` y `Onboarding` (cabeceras en la guía), SMTP, bot de Telegram y URL pública de n8n. n8n 1.40+.
+- **Datos personales que trata:** identificativos y de contacto del cliente, y **el nombre del documento** recibido (no el archivo: los archivos no pasan por n8n). Base legal: ejecución del contrato y obligaciones legales del despacho.
+- **Ahorro estimado:** con 10-20 altas al mes, cada alta manual con persecución de documentos son 20-40 minutos repartidos en varias semanas; el flujo lo deja en una checklist que se persigue sola y un panel que dice a quién hay que llamar.
+- **Tiempo de puesta en marcha:** 30 minutos.
+- **Nota legal:** el flujo persigue documentación, no evalúa solvencia ni adopta decisiones automatizadas sobre personas. El portal es de solo lectura y usa token aleatorio; no borres filas con enlaces vivos.
+
 ---
 
 ## Historial de versiones
@@ -118,3 +137,4 @@ Los flujos premium amplían los gratuitos: más pasos, versiones de producción 
 | 2026-10-19 | Nuevo flujo `clinica/recordatorio-citas` v1.0.0 (alta de cita + email 24 h antes + confirmar/cancelar en un clic + aviso de hueco liberado) + guía `FLUJO-CLINICA.md`. |
 | 2026-10-19 | Nuevo flujo `inmobiliaria/captacion-leads-respuesta` v1.0.0 (formulario + puntuación + emparejamiento con cartera + email al lead + reparto por zona + aviso de leads sin atender) + guía `FLUJO-INMOBILIARIA.md`. |
 | 2026-10-20 | Flujo **premium** `asesoria/cobros-vencidos` v1.0.0 (recordatorios escalonados 5/15/30 días + informe semanal de cartera + enlace de pago + Error Trigger) + guía `FLUJO-COBROS-VENCIDOS.md`. |
+| 2026-10-20 | Flujo **premium** `asesoria/onboarding-documental` v1.0.0 (alta con checklist por servicio + seguimiento 3/7/14/21 días + portal privado del cliente + registro de recepción + informe semanal + Error Trigger) + guía `FLUJO-ONBOARDING-DOCUMENTAL.md`. |
