@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automatizar una asesoría con n8n: plazos, cobros y altas</title>
+<meta name="description" content="Qué automatizar en una asesoría y qué no: plazos fiscales, cobros vencidos, checklist documental y KPIs con n8n. Límites claros y pago único.">
+<link rel="canonical" href="https://mrnpvn.github.io/flowkit/asesoria/">
+<link rel="stylesheet" href="../assets/flowkit.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Automatizar una asesoría: qué delegar a n8n y qué no">
+<meta property="og:description" content="Plazos, cobros, altas y KPIs: qué se automatiza con criterio en un despacho y dónde sigue haciendo falta una persona.">
+<meta property="og:url" content="https://mrnpvn.github.io/flowkit/asesoria/">
+<meta property="og:image" content="https://mrnpvn.github.io/flowkit/assets/pack-asesoria-wide.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "Automatizar una asesoría: qué delegar a n8n y qué no",
+      "description": "Guía práctica para automatizar plazos fiscales, cobros vencidos, altas de clientes y KPIs en una asesoría con n8n.",
+      "datePublished": "2026-10-20",
+      "dateModified": "2026-10-20",
+      "inLanguage": "es",
+      "author": {"@type": "Organization", "name": "FlowKit"},
+      "publisher": {"@type": "Organization", "name": "FlowKit"},
+      "mainEntityOfPage": "https://mrnpvn.github.io/flowkit/asesoria/",
+      "image": "https://mrnpvn.github.io/flowkit/assets/pack-asesoria-wide.png"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "¿Los flujos presentan modelos fiscales o calculan cuotas?", "acceptedAnswer": {"@type": "Answer", "text": "No. Los flujos avisan de fechas y ordenan documentación; no presentan modelos, no calculan cuotas y no sustituyen el criterio del asesor. Es un límite deliberado."}},
+        {"@type": "Question", "name": "¿Necesito n8n Cloud?", "acceptedAnswer": {"@type": "Answer", "text": "No. Funcionan en n8n self-hosted (gratuito) y en n8n Cloud, versión 1.40 o superior. Los datos se quedan en tu instancia."}},
+        {"@type": "Question", "name": "¿Qué cuesta el Pack Asesoría?", "acceptedAnswer": {"@type": "Answer", "text": "29 € de lanzamiento (después 39 €), pago único. Incluye tres flujos de producción, guías, plan de implantación de 30 días y plantillas RGPD."}},
+        {"@type": "Question", "name": "¿Sirve si trabajo con pocos clientes?", "acceptedAnswer": {"@type": "Answer", "text": "Con pocos clientes suele compensar empezar solo con el aviso de plazos y el alta documental. El pack completo tiene más sentido a partir de una cartera que ya no cabe en la memoria del equipo."}}
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "FlowKit", "item": "https://mrnpvn.github.io/flowkit/"},
+        {"@type": "ListItem", "position": 2, "name": "Asesoría", "item": "https://mrnpvn.github.io/flowkit/asesoria/"}
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="../">Flow<b>Kit</b></a>
+    <nav>
+      <a href="../#gratis">Flujos gratis</a>
+      <a href="../#sectores">Por sector</a>
+      <a href="../#pack">Pack Asesoría</a>
+      <a href="../calculadora/">Calculadora</a>
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section>
+  <div class="wrap post">
+    <p class="crumbs"><a href="../">FlowKit</a> / Asesoría</p>
+    <h1>Automatizar una asesoría: qué delegar a n8n y qué no</h1>
+    <p class="lead">En un despacho, casi todo lo que se olvida es una fecha, un documento o un cobro. Eso es exactamente lo que un flujo puede vigilar sin cansarse. Lo que no puede hacer es decidir por el asesor, y aquí está la línea entre una cosa y la otra.</p>
+    <div class="cta">
+      <a class="btn primary" href="../#pack">Ver el Pack Asesoría - 29 €</a>
+      <a class="btn ghost" href="https://github.com/mrnpvn/flowkit/blob/main/workflows/asesoria/alta-cliente-plazos.json" target="_blank" rel="noopener">Probar un flujo gratis</a>
+    </div>
+
+    <h2>El patrón que se repite</h2>
+    <p>Un despacho pequeño suele tener tres o cuatro personas y una cartera que crece más rápido que el equipo. El trabajo facturable está bajo control; el que se pierde es el de alrededor:</p>
+    <ul>
+      <li>Una fecha de modelo que se acerca y nadie ha mirado porque el aviso estaba en una hoja que solo revisa una persona.</li>
+      <li>Facturas vencidas que se persiguen de memoria, cliente por cliente, cuando alguien se acuerda.</li>
+      <li>Un alta nueva que depende de que el cliente mande los cinco documentos correctos, sin repetir y sin olvidar uno.</li>
+      <li>Un informe de cartera que se prepara a mano el día antes de la reunión.</li>
+    </ul>
+    <p>Ninguna de esas tareas necesita criterio profesional para ejecutarse. Necesitan constancia, que es justo lo que falla cuando hay prisa.</p>
+
+    <h2>Qué se automatiza y qué queda en manos humanas</h2>
+    <table>
+      <thead><tr><th>Tarea</th><th>Lo que hace el flujo</th><th>Lo que sigue siendo humano</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Plazos fiscales</strong></td><td>Revisa la cartera cada mañana y avisa 21 días antes de cada modelo, según régimen y empleados.</td><td>Preparar, revisar y presentar el modelo.</td></tr>
+        <tr><td><strong>Cobros vencidos</strong></td><td>Un correo por cliente con sus facturas, escalado a 5, 15 y 30 días, sin repetir el mismo nivel.</td><td>Negociar, reclamar judicialmente o decidir una excepción.</td></tr>
+        <tr><td><strong>Alta de cliente</strong></td><td>Checklist por servicio, recordatorios a 3, 7, 14 y 21 días y portal para subir documentos.</td><td>Validar que el documento es el correcto y archivarlo según norma.</td></tr>
+        <tr><td><strong>KPIs</strong></td><td>Calcula 27 indicadores de cobros, expedientes y documentación cada lunes.</td><td>Interpretar los datos y decidir qué hacer con ellos.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout warn">
+      <h3>Límite duro</h3>
+      <p>Estos flujos no presentan modelos, no calculan cuotas y no dan asesoramiento fiscal. Avisan de fechas y ordenan documentación. Cualquier cálculo o presentación sigue siendo responsabilidad del profesional (RDL 3/2020 y la normativa foral que aplique).</p>
+    </div>
+
+    <h2>1. Plazos: el aviso que no se olvida</h2>
+    <p>El flujo gratuito de asesoría cubre dos cosas. La primera es el alta: un formulario guarda el cliente en una hoja con su régimen (estimación directa, módulos o sociedad) y si tiene empleados. La segunda es el calendario: cada día a las 8:00 el flujo lee la cartera y calcula qué modelos se acercan.</p>
+    <p>Cubre los trimestrales (20 de enero, abril, julio y octubre), el 390 (30 de enero), el 190 (31 de enero), el 347 (28 de febrero) y el 100 (30 de junio). Avisa con 21 días de margen y manda <strong>un solo mensaje</strong> con todo lo que se acerca; si no hay nada, no manda nada. Ese detalle importa: un bot que escribe cada día para decir «nada» se ignora en una semana.</p>
+    <p>Es gratis y se importa en dos minutos: <a href="https://github.com/mrnpvn/flowkit/blob/main/workflows/asesoria/alta-cliente-plazos.json" target="_blank" rel="noopener">alta-cliente-plazos.json</a>.</p>
+
+    <h2>2. Cobros: dejar de perseguir facturas a mano</h2>
+    <p>La versión de producción del pack va un paso más allá del aviso simple. Cada mañana lee la hoja de facturas, agrupa por cliente y manda <strong>un único correo por cliente</strong> con todas sus facturas vencidas, no uno por factura.</p>
+    <p>El tono escala con los días: aviso a los 5, recordatorio firme a los 15 y último aviso a los 30. Cada nivel se envía una sola vez y nunca dos el mismo día, así que nadie recibe dos correos seguidos por el mismo motivo. Los lunes añade un informe de cartera con tramos (1-30, 31-60, 61-90 y más de 90 días), total pendiente y los cinco mayores deudores.</p>
+    <p>Cuando el cliente paga, un enlace con clave marca la factura como pagada y avisa al equipo. Los importes se leen en formato español y en formato internacional, y una fecha imposible como 31/02 no se convierte en marzo: se marca para revisar.</p>
+
+    <h2>3. Altas: la checklist que no depende de la memoria</h2>
+    <p>El flujo de onboarding documental genera la lista de documentos según el servicio contratado: fiscal (7), laboral (5), constitución (6), contabilidad (5) o a medida (4). Crea una fila por documento con un identificador, y otra por cliente.</p>
+    <p>A partir de ahí, el cliente recibe su checklist y un enlace privado donde ve qué ha entregado y qué falta. Los recordatorios salen a los 3, 7, 14 y 21 días, con un correo por cliente y solo con lo pendiente. Al día 21 se marca en rojo para el equipo. Cuando el cliente sube lo que falta, el porcentaje se recalcula y, al llegar al 100 %, se envía el correo de alta completada sin que nadie tenga que acordarse.</p>
+    <p>Los lunes, un informe de 9:00 resume expedientes abiertos, tasa de completitud, antigüedad media, los bloqueados desde hace más de 21 días y los tres documentos que más se atascan.</p>
+
+    <h2>4. Medir: 27 KPIs sin abrir cinco hojas</h2>
+    <p>El panel de KPIs lee las pestañas de facturas, onboarding y documentos, calcula 27 indicadores y reescribe una pestaña limpia cada lunes. Añade una fila al histórico semanal y manda un resumen por Telegram con una acción recomendada, no solo el dato.</p>
+    <p>Incluye pendiente y vencido por tramos, cobrado en 30 días, días medios de cobro, mayor deudor, facturas sin email, expedientes completos, tasa, antigüedad media, bloqueados y una salud general con semáforo. Si una hoja está vacía, el flujo no falla: escribe ceros y lo indica.</p>
+
+    <h2>Lo que estos flujos no hacen</h2>
+    <ul>
+      <li>No presentan modelos ni calculan cuotas. No es un programa fiscal.</li>
+      <li>No firman, no certifican y no validan documentos por ti.</li>
+      <li>No sustituyen el criterio profesional ni la relación con el cliente.</li>
+      <li>No envían datos a servidores de FlowKit: todo corre en tu instancia de n8n, con tus credenciales.</li>
+    </ul>
+
+    <h2>Qué necesitas para instalarlo</h2>
+    <ul>
+      <li>n8n 1.40 o superior, en tu servidor o en la nube.</li>
+      <li>Una hoja de Google Sheets con las columnas que indica cada guía (se copian de la documentación).</li>
+      <li>Una cuenta de correo SMTP para los envíos y, si quieres avisos, un bot de Telegram.</li>
+      <li>Una URL pública para los enlaces de confirmación y el portal de documentos (puede ser la de tu propia instancia).</li>
+    </ul>
+
+    <h2>Cómo empezar sin comprar nada</h2>
+    <div class="steps">
+      <div class="step"><h3>Prueba el flujo gratis</h3><p>Descarga <code>alta-cliente-plazos.json</code>, impórtalo en n8n y conéctalo a una hoja de prueba. Es el mismo nivel de acabado que el pack, en versión sencilla.</p></div>
+      <div class="step"><h3>Decide qué te duele más</h3><p>Si el problema son los cobros, el pack empieza por ahí. Si son las altas, el onboarding documental. No hace falta implantar los tres el mismo mes.</p></div>
+      <div class="step"><h3>Implantación en 30 días</h3><p>El pack incluye un plan semana a semana con pruebas en seco y una rutina diaria de equipo, para no activar nada que no esté probado.</p></div>
+    </div>
+
+    <h2>Cuándo no compensa</h2>
+    <p>Si llevas menos de veinte o treinta clientes activos y todo cabe en la cabeza de una persona, el aviso de plazos gratuito suele ser suficiente. Si tus datos viven en papel o en correos sueltos, primero hay que ordenarlos: automatizar el desorden solo lo hace más rápido. Y si nadie va a revisar los avisos, el flujo se convierte en ruido.</p>
+
+    <h2>Preguntas frecuentes</h2>
+    <details><summary>¿Los flujos presentan modelos fiscales o calculan cuotas?</summary><p>No. Avisan de fechas y ordenan documentación. Preparar, revisar y presentar el modelo sigue siendo trabajo del asesor. Es un límite deliberado, no una carencia.</p></details>
+    <details><summary>¿Necesito n8n Cloud?</summary><p>No. Funcionan en n8n self-hosted, que es gratuito, y en n8n Cloud, versión 1.40 o superior. Solo necesitas las cuentas de las herramientas que use cada flujo.</p></details>
+    <details><summary>¿Qué incluye el Pack Asesoría y cuánto cuesta?</summary><p>29 € de lanzamiento (después 39 €), pago único. Tres flujos de producción (cobros, onboarding y KPIs), cinco guías, plan de implantación de 30 días, tres plantillas RGPD, dos de mensajes, licencia comercial y 12 meses de actualizaciones.</p></details>
+    <details><summary>¿Puedo usarlo con los clientes de mi despacho?</summary><p>Sí. La licencia es comercial: puedes implantarlo en las cuentas de tus clientes. No se permite revender los archivos como plantillas.</p></details>
+
+    <div class="cta-box">
+      <h3>Pack Asesoría: los tres flujos, guías y plantillas</h3>
+      <p>Cobros vencidos, onboarding documental y panel de KPIs, con reintentos, aviso de errores y documentación en español. Pago único de 29 €.</p>
+      <a class="btn primary" href="https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria">Comprar en Gumroad</a>
+    </div>
+    <p class="footer-note">Guía informativa. No constituye asesoramiento fiscal ni jurídico. Las obligaciones de cada despacho dependen de su situación y de la normativa aplicable.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 FlowKit · Flujos n8n para pymes y despachos</div>
+    <div>
+      <a href="../">Hub</a> ·
+      <a href="../clinica/">Clínicas</a> ·
+      <a href="../inmobiliaria/">Inmobiliarias</a> ·
+      <a href="../calculadora/">Calculadora</a> ·
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

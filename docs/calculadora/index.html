@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora: horas y coste de las tareas repetitivas</title>
+<meta name="description" content="Calcula en 10 segundos cuántas horas al mes pierde tu equipo en tareas repetitivas y cuánto cuesta. Sin registro, sin enviar datos y sin promesas.">
+<link rel="canonical" href="https://mrnpvn.github.io/flowkit/calculadora/">
+<link rel="stylesheet" href="../assets/flowkit.css">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Calculadora: horas y coste de las tareas repetitivas">
+<meta property="og:description" content="Pon tus números y ve el coste real de copiar, avisar y perseguir a mano. Todo se calcula en tu navegador.">
+<meta property="og:url" content="https://mrnpvn.github.io/flowkit/calculadora/">
+<meta property="og:image" content="https://mrnpvn.github.io/flowkit/assets/pack-asesoria-wide.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Calculadora de coste de tareas repetitivas",
+      "url": "https://mrnpvn.github.io/flowkit/calculadora/",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Cualquier navegador",
+      "inLanguage": "es",
+      "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
+      "description": "Calcula las horas y el coste mensual de las tareas repetitivas de un equipo pequeño."
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "¿Se envían mis datos a algún sitio?", "acceptedAnswer": {"@type": "Answer", "text": "No. El cálculo se hace en tu navegador con JavaScript. No hay formulario, no hay cookies y no se envía nada a ningún servidor."}},
+        {"@type": "Question", "name": "¿Qué porcentaje de automatización debo poner?", "acceptedAnswer": {"@type": "Answer", "text": "Entre el 40 % y el 60 % es un punto de partida razonable para tareas de aviso, copia y seguimiento. No todo se puede automatizar: la decisión y la excepción siguen siendo humanas."}},
+        {"@type": "Question", "name": "¿El ahorro es dinero que aparece en la cuenta?", "acceptedAnswer": {"@type": "Answer", "text": "No necesariamente. El cálculo valora el tiempo en coste de hora. El ahorro se convierte en dinero si se factura más, se atiende mejor o se evita contratar."}}
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "FlowKit", "item": "https://mrnpvn.github.io/flowkit/"},
+        {"@type": "ListItem", "position": 2, "name": "Calculadora", "item": "https://mrnpvn.github.io/flowkit/calculadora/"}
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="../">Flow<b>Kit</b></a>
+    <nav>
+      <a href="../#gratis">Flujos gratis</a>
+      <a href="../#sectores">Por sector</a>
+      <a href="../#pack">Pack Asesoría</a>
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <p class="crumbs"><a href="../">FlowKit</a> / Calculadora</p>
+    <h1>¿Cuánto te cuesta lo que se hace a mano?</h1>
+    <p class="lead">Copiar datos, mandar avisos, perseguir documentos. Son tareas pequeñas que, sumadas, se comen media mañana a la semana. Pon tus números: el cálculo se hace en tu navegador y no se envía nada.</p>
+
+    <div class="calc">
+      <div class="card">
+        <div class="field">
+          <label for="personas">Personas que hacen tareas repetitivas</label>
+          <input id="personas" type="number" min="1" max="200" step="1" value="3" inputmode="numeric">
+          <span class="hint">Cuenta solo a quien copia, avisa o persigue a mano.</span>
+        </div>
+        <div class="field">
+          <label for="minutos">Minutos al día por persona</label>
+          <input id="minutos" type="number" min="0" max="480" step="5" value="45" inputmode="numeric">
+          <span class="hint">Una estimación honesta vale más que una cifra bonita.</span>
+        </div>
+        <div class="field">
+          <label for="dias">Días laborables al mes</label>
+          <input id="dias" type="number" min="1" max="31" step="1" value="21" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label for="coste">Coste por hora (€)</label>
+          <input id="coste" type="number" min="0" max="500" step="1" value="18" inputmode="decimal">
+          <span class="hint">Coste empresa aproximado, no salario bruto.</span>
+        </div>
+        <div class="field">
+          <label for="auto">Porcentaje automatizable</label>
+          <input id="auto" type="number" min="0" max="100" step="5" value="50" inputmode="numeric">
+          <span class="hint">Avisos, copias y seguimientos suelen estar entre el 40 y el 60 %.</span>
+        </div>
+      </div>
+
+      <aside class="result" aria-live="polite">
+        <h2>Ahorro estimado</h2>
+        <p class="big" id="ahorroAno">-</p>
+        <p class="biglabel">al año, en tiempo de equipo</p>
+        <div class="row"><span>Horas repetitivas al mes</span><span id="horasMes">-</span></div>
+        <div class="row"><span>Coste de esas horas al mes</span><span id="costeMes">-</span></div>
+        <div class="row"><span>Horas automatizables al mes</span><span id="horasAuto">-</span></div>
+        <div class="row"><span>Ahorro estimado al mes</span><span id="ahorroMes">-</span></div>
+        <div class="row"><span>Jornadas de 8 h al mes</span><span id="jornadas">-</span></div>
+        <p class="mini" style="font-size:.8rem;color:var(--muted);margin:14px 0 0">Estimación orientativa, no una promesa de ahorro. Se calcula con 11 meses de actividad al año.</p>
+      </aside>
+    </div>
+
+    <div class="callout" style="margin-top:28px">
+      <h3>Cómo leer el resultado</h3>
+      <p>Si el ahorro mensual es menor que el tiempo que tardas en montar y mantener un flujo, no lo montes. Automatizar tiene sentido cuando la tarea se repite todas las semanas y las reglas están claras.</p>
+    </div>
+
+    <h2 style="margin-top:56px">Qué automatizar primero</h2>
+    <table>
+      <thead><tr><th>Tarea</th><th>Señal de que toca</th><th>Flujo</th></tr></thead>
+      <tbody>
+        <tr><td>Aviso de plazos y citas</td><td>Alguien revisa una hoja o una agenda cada mañana para no olvidar una fecha.</td><td><a href="../asesoria/">Plazos fiscales</a> · <a href="../clinica/">Recordatorios de cita</a></td></tr>
+        <tr><td>Cobros vencidos</td><td>Las facturas se persiguen de memoria y cada uno tiene su propia lista.</td><td><a href="../asesoria/">Cobros vencidos</a></td></tr>
+        <tr><td>Documentación de altas</td><td>Se piden los mismos documentos tres veces y nunca llegan todos juntos.</td><td><a href="../asesoria/">Onboarding documental</a></td></tr>
+        <tr><td>Respuesta a leads</td><td>El primer contacto depende de quién mire el correo esa mañana.</td><td><a href="../inmobiliaria/">Captación y reparto</a></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Preguntas frecuentes</h2>
+    <details><summary>¿Se envían mis datos a algún sitio?</summary><p>No. El cálculo se hace en tu navegador con JavaScript. No hay formulario, no hay cookies y no se envía nada a ningún servidor.</p></details>
+    <details><summary>¿Qué porcentaje de automatización debo poner?</summary><p>Entre el 40 % y el 60 % es un punto de partida razonable para avisos, copias y seguimientos. La decisión, la excepción y la relación con el cliente siguen siendo humanas.</p></details>
+    <details><summary>¿El ahorro es dinero que aparece en la cuenta?</summary><p>No necesariamente. El cálculo valora el tiempo a coste de hora. Se convierte en dinero si se factura más, se atiende mejor o se evita una contratación.</p></details>
+
+    <div class="cta-box">
+      <h3>Del cálculo al flujo</h3>
+      <p>Empieza con un flujo gratis y comprueba el nivel. Si encaja, el Pack Asesoría añade las versiones de producción con reintentos y aviso de errores.</p>
+      <a class="btn primary" href="../#gratis">Ver los flujos gratis</a>
+      <a class="btn ghost" href="https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria" style="margin-left:8px">Pack Asesoría - 29 €</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 FlowKit · Flujos n8n para pymes y despachos</div>
+    <div>
+      <a href="../">Hub</a> ·
+      <a href="../asesoria/">Asesorías</a> ·
+      <a href="../clinica/">Clínicas</a> ·
+      <a href="../inmobiliaria/">Inmobiliarias</a> ·
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var ids = ["personas", "minutos", "dias", "coste", "auto"];
+  var el = {};
+  ids.forEach(function (id) { el[id] = document.getElementById(id); });
+
+  var out = {
+    ahorroAno: document.getElementById("ahorroAno"),
+    horasMes: document.getElementById("horasMes"),
+    costeMes: document.getElementById("costeMes"),
+    horasAuto: document.getElementById("horasAuto"),
+    ahorroMes: document.getElementById("ahorroMes"),
+    jornadas: document.getElementById("jornadas")
+  };
+
+  var eur = new Intl.NumberFormat("es-ES", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+  var num1 = new Intl.NumberFormat("es-ES", { maximumFractionDigits: 1 });
+  var num0 = new Intl.NumberFormat("es-ES", { maximumFractionDigits: 0 });
+
+  function val(id, min, max, fallback) {
+    var n = parseFloat(String(el[id].value).replace(",", "."));
+    if (!isFinite(n)) { return fallback; }
+    if (n < min) { return min; }
+    if (n > max) { return max; }
+    return n;
+  }
+
+  function calc() {
+    var personas = val("personas", 1, 200, 1);
+    var minutos = val("minutos", 0, 480, 0);
+    var dias = val("dias", 1, 31, 21);
+    var coste = val("coste", 0, 500, 0);
+    var pct = val("auto", 0, 100, 0) / 100;
+
+    var horasMes = (personas * minutos * dias) / 60;
+    var costeMes = horasMes * coste;
+    var horasAuto = horasMes * pct;
+    var ahorroMes = costeMes * pct;
+    var ahorroAno = ahorroMes * 11;
+    var jornadas = horasAuto / 8;
+
+    out.horasMes.textContent = num1.format(horasMes) + " h";
+    out.costeMes.textContent = eur.format(costeMes);
+    out.horasAuto.textContent = num1.format(horasAuto) + " h";
+    out.ahorroMes.textContent = eur.format(ahorroMes);
+    out.jornadas.textContent = num1.format(jornadas);
+    out.ahorroAno.textContent = eur.format(ahorroAno);
+  }
+
+  ids.forEach(function (id) {
+    el[id].addEventListener("input", calc);
+    el[id].addEventListener("change", calc);
+  });
+
+  calc();
+})();
+</script>
+
+</body>
+</html>

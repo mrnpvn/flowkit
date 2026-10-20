@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mrnpvn.github.io/flowkit/sitemap.xml

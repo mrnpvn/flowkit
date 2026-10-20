@@ -37,6 +37,8 @@ FlowKit empaqueta ese trabajo en flujos probados: los importas, conectas tus cue
 
 Cada flujo incluye su propia ficha en [`docs/CATALOGO.md`](docs/CATALOGO.md): qué hace, qué necesitas configurar, qué datos toca y cuánto tiempo ahorra. Las guías de puesta en marcha están en [`docs/`](docs/): [`INSTALACION-N8N.md`](docs/INSTALACION-N8N.md) (general), [`FLUJO-ASESORIA.md`](docs/FLUJO-ASESORIA.md) (alta de cliente + plazos fiscales), [`FLUJO-CLINICA.md`](docs/FLUJO-CLINICA.md) (recordatorios de cita + cancelaciones) y [`FLUJO-INMOBILIARIA.md`](docs/FLUJO-INMOBILIARIA.md) (captación de leads + respuesta automática). El flujo de clínica existe también en inglés, documentado en [`docs/FLOW-APPOINTMENTS-EN.md`](docs/FLOW-APPOINTMENTS-EN.md). El flujo premium de cobros vencidos se documenta en [`docs/FLUJO-COBROS-VENCIDOS.md`](docs/FLUJO-COBROS-VENCIDOS.md), el de onboarding documental en [`docs/FLUJO-ONBOARDING-DOCUMENTAL.md`](docs/FLUJO-ONBOARDING-DOCUMENTAL.md) y el panel de KPIs en [`docs/FLUJO-KPI-PANEL.md`](docs/FLUJO-KPI-PANEL.md).
 
+Versiones web de estas guías, con más detalle y una calculadora de tiempo: [asesorías](https://mrnpvn.github.io/flowkit/asesoria/), [clínicas](https://mrnpvn.github.io/flowkit/clinica/), [inmobiliarias](https://mrnpvn.github.io/flowkit/inmobiliaria/) y [calculadora de coste](https://mrnpvn.github.io/flowkit/calculadora/).
+
 ## Instalación (2 minutos)
 
 1. Descarga el `.json` del flujo que quieras.

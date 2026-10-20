@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automatizar una inmobiliaria: responder al lead en minutos</title>
+<meta name="description" content="Puntuar un lead, emparejarlo con la cartera y repartirlo por zona en menos de un minuto con n8n. Qué automatizar en una inmobiliaria y qué no.">
+<link rel="canonical" href="https://mrnpvn.github.io/flowkit/inmobiliaria/">
+<link rel="stylesheet" href="../assets/flowkit.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Automatizar una inmobiliaria: responder al lead en minutos">
+<meta property="og:description" content="Puntuación del lead, emparejamiento con la cartera y reparto por zona, sin IA ni APIs de pago.">
+<meta property="og:url" content="https://mrnpvn.github.io/flowkit/inmobiliaria/">
+<meta property="og:image" content="https://mrnpvn.github.io/flowkit/assets/pack-asesoria-wide.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "Automatizar una inmobiliaria: responder al lead en minutos",
+      "description": "Guía práctica para puntuar leads, emparejarlos con la cartera y repartirlos por zona con n8n, sin IA ni APIs de pago.",
+      "datePublished": "2026-10-20",
+      "dateModified": "2026-10-20",
+      "inLanguage": "es",
+      "author": {"@type": "Organization", "name": "FlowKit"},
+      "publisher": {"@type": "Organization", "name": "FlowKit"},
+      "mainEntityOfPage": "https://mrnpvn.github.io/flowkit/inmobiliaria/",
+      "image": "https://mrnpvn.github.io/flowkit/assets/pack-asesoria-wide.png"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "¿Usa inteligencia artificial?", "acceptedAnswer": {"@type": "Answer", "text": "No. La puntuación y el emparejamiento son reglas explícitas sobre los datos del formulario y la hoja de inmuebles. Se puede leer y corregir sin saber programar."}},
+        {"@type": "Question", "name": "¿Sustituye a un CRM inmobiliario?", "acceptedAnswer": {"@type": "Answer", "text": "No. Organiza la primera respuesta y el reparto. El seguimiento comercial posterior sigue en el CRM del equipo."}},
+        {"@type": "Question", "name": "¿Envía email al lead sin permiso?", "acceptedAnswer": {"@type": "Answer", "text": "Solo si el formulario incluye consentimiento expreso. Sin consentimiento, el lead se guarda y se avisa al equipo, pero no se le escribe."}},
+        {"@type": "Question", "name": "¿Qué pasa si un lead no se atiende?", "acceptedAnswer": {"@type": "Answer", "text": "Un aviso diario a las 10:00 recoge los leads en estado Nuevo con más de 24 horas y manda un único mensaje al equipo."}}
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "FlowKit", "item": "https://mrnpvn.github.io/flowkit/"},
+        {"@type": "ListItem", "position": 2, "name": "Inmobiliaria", "item": "https://mrnpvn.github.io/flowkit/inmobiliaria/"}
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="../">Flow<b>Kit</b></a>
+    <nav>
+      <a href="../#gratis">Flujos gratis</a>
+      <a href="../#sectores">Por sector</a>
+      <a href="../#pack">Pack Asesoría</a>
+      <a href="../calculadora/">Calculadora</a>
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section>
+  <div class="wrap post">
+    <p class="crumbs"><a href="../">FlowKit</a> / Inmobiliaria</p>
+    <h1>Automatizar una inmobiliaria: responder al lead en minutos</h1>
+    <p class="lead">El primer agente que responde suele llevarse la visita. No porque venda mejor, sino porque llega antes. Un flujo no negocia ni convence: solo garantiza que el lead se lea, se puntúe y llegue a la persona correcta mientras el interés sigue vivo.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/mrnpvn/flowkit/blob/main/workflows/inmobiliaria/captacion-leads-respuesta.json" target="_blank" rel="noopener">Descargar el flujo gratis</a>
+      <a class="btn ghost" href="../calculadora/">Calcular el tiempo que pierdes</a>
+    </div>
+
+    <h2>Lo que se pierde entre el formulario y la llamada</h2>
+    <p>Un lead entra por la web a las 21:40. El formulario manda un correo a una bandeja que se revisa por la mañana. A las 9:05 alguien lo lee, busca un inmueble que encaje y lo reenvía a un comercial. A las 11:00 el comercial llama. En esas trece horas, el interesado ha escrito a otras tres agencias.</p>
+    <p>No hace falta un contact center para arreglarlo. Hace falta que el sistema haga en treinta segundos lo que nadie hace de madrugada: ordenar, puntuar, proponer y avisar.</p>
+
+    <h2>Qué hace el flujo</h2>
+    <table>
+      <thead><tr><th>Paso</th><th>Qué ocurre</th><th>Por qué importa</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1. Normalizar</strong></td><td>El formulario se limpia: teléfono, email, operación, tipo, zona, habitaciones y presupuesto.</td><td>Evita que un espacio o una mayúscula rompan el emparejamiento.</td></tr>
+        <tr><td><strong>2. Leer cartera</strong></td><td>Se lee la hoja <code>Inmuebles</code> y se descartan los que no están disponibles.</td><td>Nunca se propone algo vendido o retirado.</td></tr>
+        <tr><td><strong>3. Puntuar</strong></td><td>El lead recibe una puntuación de 0 a 100 según operación, tipo, zona, habitaciones y presupuesto.</td><td>Prioriza sin discusión: el comercial ve primero lo que encaja.</td></tr>
+        <tr><td><strong>4. Emparejar</strong></td><td>Se proponen hasta tres inmuebles del mismo tipo y operación, con margen del 10 % sobre el presupuesto.</td><td>La respuesta ya lleva opciones concretas, no un «le llamamos».</td></tr>
+        <tr><td><strong>5. Guardar y avisar</strong></td><td>El lead se guarda en <code>Leads</code> y el equipo recibe un aviso con prioridad y comercial asignado por zona.</td><td>Nadie tiene que decidir a mano a quién le toca.</td></tr>
+        <tr><td><strong>6. Rescate a 24 h</strong></td><td>Cada día a las 10:00 se revisan los leads en estado <code>Nuevo</code> con más de un día.</td><td>Un solo aviso: lo que se quedó sin atender vuelve a la vista.</td></tr>
+      </tbody>
+    </table>
+    <p>Son 16 nodos en total. No hay IA, no hay APIs de pago y no hay servicios externos más allá de Google Sheets, el correo y Telegram.</p>
+
+    <h2>La puntuación, explicada sin caja negra</h2>
+    <p>El flujo suma puntos cuando coinciden la operación (compra o alquiler), el tipo de inmueble, la zona, el número de habitaciones y el presupuesto. Los inmuebles que se salen del presupuesto más de un 10 % no se proponen. Un lead de valoración se trata distinto: no busca cartera, busca una tasación, y el aviso lo indica.</p>
+    <p>Que las reglas sean explícitas tiene una ventaja práctica: si el equipo no está de acuerdo con la prioridad, se cambia un número y se vuelve a probar. No hay que reentrenar nada.</p>
+
+    <div class="callout">
+      <h3>Consentimiento antes que velocidad</h3>
+      <p>El correo informativo al lead se envía solo si el formulario incluye consentimiento expreso. Sin consentimiento, el lead se guarda y el equipo recibe el aviso, pero no se le escribe. La velocidad no justifica saltarse la base legal.</p>
+    </div>
+
+    <h2>Lo que el flujo no hace</h2>
+    <ul>
+      <li>No es un CRM: no gestiona visitas, ofertas, arras ni el seguimiento comercial completo.</li>
+      <li>No deduplica leads por email o teléfono. Es una limitación conocida y documentada: si el volumen lo pide, se añade.</li>
+      <li>No valora inmuebles ni promete precios de venta.</li>
+      <li>No redacta mensajes con IA: los textos son plantillas que el equipo revisa y ajusta.</li>
+    </ul>
+
+    <h2>Qué necesitas</h2>
+    <ul>
+      <li>n8n 1.40 o superior (probado en 2.43.8).</li>
+      <li>Dos hojas de Google Sheets: <code>Inmuebles</code> y <code>Leads</code>, con las columnas de la guía.</li>
+      <li>Una cuenta SMTP para el correo al lead.</li>
+      <li>Un bot de Telegram para los avisos internos.</li>
+    </ul>
+
+    <h2>Cómo empezar sin tocar la cartera real</h2>
+    <div class="steps">
+      <div class="step"><h3>Copia las hojas</h3><p>Duplica la estructura con cinco inmuebles inventados y tu propio email como lead.</p></div>
+      <div class="step"><h3>Importa el JSON</h3><p>Conecta las credenciales y revisa los textos del correo. Las notas dentro de n8n explican cada nodo.</p></div>
+      <div class="step"><h3>Prueba y ajusta</h3><p>Lanza cuatro casos: compra con consentimiento, alquiler sin consentimiento, valoración y cartera vacía.</p></div>
+    </div>
+
+    <h2>Cuándo no merece la pena</h2>
+    <p>Si recibes dos leads a la semana y alguien los ve al momento, el flujo no cambia nada. Si tu cartera vive en el CRM del portal y no puedes exportarla a una hoja, tampoco. Donde sí se nota es con volumen, varias zonas y un equipo que no siempre está delante del correo.</p>
+
+    <h2>Preguntas frecuentes</h2>
+    <details><summary>¿Usa inteligencia artificial?</summary><p>No. La puntuación y el emparejamiento son reglas explícitas sobre los datos del formulario y de la cartera. Se pueden leer, discutir y corregir.</p></details>
+    <details><summary>¿Sustituye a un CRM inmobiliario?</summary><p>No. Organiza la primera respuesta y el reparto. El seguimiento posterior sigue en el CRM del equipo.</p></details>
+    <details><summary>¿Envía email al lead sin permiso?</summary><p>No. Solo con consentimiento expreso en el formulario. Sin consentimiento se guarda el lead y se avisa al equipo.</p></details>
+    <details><summary>¿Qué pasa si un lead no se atiende?</summary><p>Un aviso diario a las 10:00 recoge los leads en estado Nuevo con más de 24 horas y manda un único mensaje al equipo.</p></details>
+
+    <div class="cta-box">
+      <h3>Si el cuello de botella es administrativo</h3>
+      <p>El Pack Asesoría resuelve cobros vencidos, altas con checklist documental y KPIs. La misma lógica de reglas claras, sin cuotas mensuales.</p>
+      <a class="btn primary" href="https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria">Ver el Pack Asesoría - 29 €</a>
+    </div>
+    <p class="footer-note">Guía informativa. No constituye asesoramiento inmobiliario ni jurídico. Cada empresa debe definir su base legal para el tratamiento de datos de contactos.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 FlowKit · Flujos n8n para pymes y despachos</div>
+    <div>
+      <a href="../">Hub</a> ·
+      <a href="../asesoria/">Asesorías</a> ·
+      <a href="../clinica/">Clínicas</a> ·
+      <a href="../calculadora/">Calculadora</a> ·
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

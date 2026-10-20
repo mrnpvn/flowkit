@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automatizar una clínica: recordatorios y huecos con n8n</title>
+<meta name="description" content="Recordatorios de cita con enlaces de confirmar y cancelar, liberación del hueco y cero datos clínicos en el correo. Cómo montarlo con n8n y qué límites tiene.">
+<link rel="canonical" href="https://mrnpvn.github.io/flowkit/clinica/">
+<link rel="stylesheet" href="../assets/flowkit.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Automatizar una clínica: recordatorios y huecos con n8n">
+<meta property="og:description" content="Confirmar, cancelar y liberar el hueco sin llamadas. Qué automatizar en una clínica y qué datos no deben salir por correo.">
+<meta property="og:url" content="https://mrnpvn.github.io/flowkit/clinica/">
+<meta property="og:image" content="https://mrnpvn.github.io/flowkit/assets/pack-asesoria-wide.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "Automatizar una clínica: recordatorios y huecos con n8n",
+      "description": "Guía práctica para automatizar recordatorios de cita, confirmaciones y cancelaciones en una clínica con n8n, sin datos clínicos en el correo.",
+      "datePublished": "2026-10-20",
+      "dateModified": "2026-10-20",
+      "inLanguage": "es",
+      "author": {"@type": "Organization", "name": "FlowKit"},
+      "publisher": {"@type": "Organization", "name": "FlowKit"},
+      "mainEntityOfPage": "https://mrnpvn.github.io/flowkit/clinica/",
+      "image": "https://mrnpvn.github.io/flowkit/assets/pack-asesoria-wide.png"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "¿El correo de recordatorio incluye el motivo de la consulta?", "acceptedAnswer": {"@type": "Answer", "text": "No. El correo solo lleva fecha, hora y enlaces de confirmar o cancelar. Evitar el motivo clínico reduce la exposición de datos de salud (art. 9 RGPD) en un canal que no controlas."}},
+        {"@type": "Question", "name": "¿Qué pasa cuando un paciente cancela?", "acceptedAnswer": {"@type": "Answer", "text": "El flujo actualiza el estado de la cita, avisa al equipo con la fecha y la hora exactas del hueco liberado y muestra al paciente una página de confirmación."}},
+        {"@type": "Question", "name": "¿Sustituye al software de gestión de la clínica?", "acceptedAnswer": {"@type": "Answer", "text": "No. El flujo gestiona avisos y estados sobre una hoja de cálculo. No es una historia clínica ni un programa de facturación."}},
+        {"@type": "Question", "name": "¿Funciona en inglés?", "acceptedAnswer": {"@type": "Answer", "text": "Sí. Hay una versión en español y otra en inglés con la misma lógica, pensada para la librería pública de n8n."}}
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "FlowKit", "item": "https://mrnpvn.github.io/flowkit/"},
+        {"@type": "ListItem", "position": 2, "name": "Clínica", "item": "https://mrnpvn.github.io/flowkit/clinica/"}
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="../">Flow<b>Kit</b></a>
+    <nav>
+      <a href="../#gratis">Flujos gratis</a>
+      <a href="../#sectores">Por sector</a>
+      <a href="../#pack">Pack Asesoría</a>
+      <a href="../calculadora/">Calculadora</a>
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section>
+  <div class="wrap post">
+    <p class="crumbs"><a href="../">FlowKit</a> / Clínica</p>
+    <h1>Automatizar una clínica: recordatorios y huecos con n8n</h1>
+    <p class="lead">Cada cita que se pierde por olvido es una hora que no se recupera. La solución no es llamar a todos: es avisar a tiempo, dejar que el paciente confirme o cancele en un clic y avisar al equipo en el momento en que queda un hueco.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/mrnpvn/flowkit/tree/main/workflows/clinica" target="_blank" rel="noopener">Descargar el flujo gratis</a>
+      <a class="btn ghost" href="../#pack">Ver el Pack Asesoría</a>
+    </div>
+
+    <h2>El problema no es la agenda: es el hueco que nadie sabe que existe</h2>
+    <p>En consultas pequeñas, el recordatorio se hace a mano cuando hay un rato. El paciente que no puede ir no siempre llama; a veces responde al correo, a veces no responde a nada. El resultado es una agenda que parece llena y una sala vacía a las 10:30.</p>
+    <p>Automatizar esto no requiere un CRM nuevo ni cambiar de software. Requiere tres cosas que un flujo hace bien: enviar el aviso en el momento correcto, recoger la respuesta y contársela al equipo.</p>
+
+    <h2>Qué hace el flujo, paso a paso</h2>
+    <table>
+      <thead><tr><th>Momento</th><th>Acción automática</th><th>Resultado</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Nueva cita</strong></td><td>Un formulario guarda paciente, email, teléfono, fecha, hora y profesional en la hoja <code>Citas</code>.</td><td>Aviso al equipo por Telegram con los datos de la cita.</td></tr>
+        <tr><td><strong>18:00 del día anterior</strong></td><td>Lee la agenda de mañana y envía un correo por paciente con los enlaces de confirmar y cancelar.</td><td>Un único resumen al equipo con las citas del día y una marca en las que no tienen email.</td></tr>
+        <tr><td><strong>Respuesta del paciente</strong></td><td>El enlace actualiza el estado por identificador y responde con una página de confirmación.</td><td>El equipo recibe el aviso; si es cancelación, con el hueco exacto.</td></tr>
+      </tbody>
+    </table>
+    <p>El identificador de cada cita lleva un sufijo aleatorio y actúa como llave del enlace. Sin él no se puede cambiar el estado de una cita ajena, y no se puede adivinar probando números.</p>
+    <p>Si la cita se cancela, el aviso al equipo incluye la fecha y la hora, no solo el nombre. Así el hueco se puede ofrecer a la lista de espera sin abrir la hoja.</p>
+
+    <h2>Datos de salud: lo que el correo no debe llevar</h2>
+    <p>El correo de recordatorio contiene fecha, hora, profesional y los enlaces. No contiene el motivo de la consulta, ni diagnósticos, ni notas. No es una limitación técnica: es una decisión de diseño.</p>
+    <p>El correo viaja por un canal que no controlas y se queda en la bandeja del paciente. Cuanto menos dato sensible lleve, menor es la exposición. Los datos de salud son categoría especial (art. 9 RGPD) y conviene que el aviso no aporte nada que el paciente no sepa ya.</p>
+    <div class="callout warn">
+      <h3>Límite duro</h3>
+      <p>El flujo no es una historia clínica, no gestiona consentimientos informados y no sustituye al software de la clínica. Si necesitas registrar información clínica, eso va en tu sistema con las garantías que exige la normativa, no en una hoja de avisos.</p>
+    </div>
+
+    <h2>Por qué una hoja de cálculo y no una base de datos</h2>
+    <p>Porque el objetivo es que puedas probarlo hoy y entenderlo sin ayuda. Una hoja con once columnas es suficiente para avisos, estados y un resumen diario. Si la clínica crece, la misma lógica se traslada a una base de datos cambiando el nodo de lectura; el resto del flujo no cambia.</p>
+    <p>La hoja también es el plan B: si el flujo se para, el equipo sigue viendo la agenda y puede llamar. Un sistema que nadie sabe leer cuando falla es un riesgo, no una mejora.</p>
+
+    <h2>Versión en inglés para la librería de n8n</h2>
+    <p>Hay dos versiones del mismo flujo: la española, con la hoja <code>Citas</code>, y la inglesa, con <code>Appointments</code> y todos los textos en inglés. La inglesa incluye una mejora: los enlaces llevan también la fecha y la hora, de modo que el aviso de cancelación puede decir el hueco exacto sin consultar la hoja.</p>
+    <ul>
+      <li><a href="https://github.com/mrnpvn/flowkit/blob/main/workflows/clinica/recordatorio-citas.json" target="_blank" rel="noopener">recordatorio-citas.json</a> (español, 21 nodos)</li>
+      <li><a href="https://github.com/mrnpvn/flowkit/blob/main/workflows/clinica/appointment-reminders-confirm-cancel.json" target="_blank" rel="noopener">appointment-reminders-confirm-cancel.json</a> (inglés, 21 nodos)</li>
+      <li><a href="https://github.com/mrnpvn/flowkit/blob/main/docs/FLUJO-CLINICA.md" target="_blank" rel="noopener">Guía de instalación en español</a></li>
+    </ul>
+
+    <h2>Qué necesitas</h2>
+    <ul>
+      <li>n8n 1.40 o superior. La versión probada es 2.43.8.</li>
+      <li>Una hoja de Google Sheets con las columnas de la guía.</li>
+      <li>Una cuenta SMTP para los correos (la de la clínica o una dedicada).</li>
+      <li>Un bot de Telegram para los avisos internos.</li>
+      <li>Una URL pública para los enlaces de confirmar y cancelar. Puede ser tu propia instancia de n8n.</li>
+    </ul>
+
+    <h2>Cómo probarlo sin riesgo</h2>
+    <div class="steps">
+      <div class="step"><h3>Copia la hoja de prueba</h3><p>Usa una hoja aparte con citas inventadas y tu propio correo. Nada de pacientes reales en la primera pasada.</p></div>
+      <div class="step"><h3>Importa y ajusta</h3><p>Importa el <code>.json</code>, conecta credenciales y cambia los textos del correo por los de la clínica.</p></div>
+      <div class="step"><h3>Activa en dos fases</h3><p>Primero solo el aviso al equipo. Cuando funcione, activa el correo al paciente y después los enlaces.</p></div>
+    </div>
+
+    <h2>Cuándo no merece la pena</h2>
+    <p>Si la clínica ya tiene un módulo de recordatorios por SMS integrado en su software, este flujo sobra. Si el volumen es de dos o tres citas al día y la recepción llama a todos, el ahorro es pequeño. Donde sí se nota es cuando hay varias agendas, profesionales distintos y nadie tiene diez minutos a las 18:00 para llamar uno por uno.</p>
+
+    <h2>Preguntas frecuentes</h2>
+    <details><summary>¿El correo incluye el motivo de la consulta?</summary><p>No. Solo fecha, hora, profesional y los enlaces. Evitar el motivo clínico reduce la exposición de datos de salud en un canal que no controlas.</p></details>
+    <details><summary>¿Qué pasa cuando un paciente cancela?</summary><p>El flujo actualiza el estado, avisa al equipo con la fecha y la hora del hueco liberado y muestra al paciente una página de confirmación. Si el enlace no es válido, devuelve un error claro.</p></details>
+    <details><summary>¿Sustituye al software de gestión de la clínica?</summary><p>No. Gestiona avisos y estados sobre una hoja. No es historia clínica, no factura y no guarda información clínica.</p></details>
+    <details><summary>¿Funciona en inglés?</summary><p>Sí. La versión inglesa tiene la misma lógica y está preparada para enviarse a la librería pública de n8n.</p></details>
+
+    <div class="cta-box">
+      <h3>¿También llevas la parte administrativa?</h3>
+      <p>El Pack Asesoría cubre cobros vencidos, altas de clientes con checklist documental y un panel de 27 KPIs. Misma filosofía: flujos probados, sin cuotas mensuales.</p>
+      <a class="btn primary" href="https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria">Ver el Pack Asesoría - 29 €</a>
+    </div>
+    <p class="footer-note">Guía informativa. No constituye asesoramiento sanitario ni jurídico. Cada centro debe evaluar su base jurídica y sus obligaciones de protección de datos.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 FlowKit · Flujos n8n para pymes y despachos</div>
+    <div>
+      <a href="../">Hub</a> ·
+      <a href="../asesoria/">Asesorías</a> ·
+      <a href="../inmobiliaria/">Inmobiliarias</a> ·
+      <a href="../calculadora/">Calculadora</a> ·
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
