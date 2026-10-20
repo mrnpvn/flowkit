@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FlowKit — Automatiza tu asesoría, clínica o inmobiliaria con n8n</title>
+<meta name="description" content="Flujos n8n listos para importar: captación de leads, recordatorios de cita, plazos fiscales y cobros. Empieza gratis; Pack Asesoría con cobros vencidos, onboarding documental y KPIs por 29 € (pago único).">
+<link rel="canonical" href="https://mrnpvn.github.io/flowkit/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="FlowKit — Automatiza tu despacho con n8n, sin código">
+<meta property="og:description" content="4 flujos n8n gratis + Pack Asesoría: cobros vencidos, onboarding documental y panel de KPIs. 29 € pago único.">
+<meta property="og:image" content="https://mrnpvn.github.io/flowkit/assets/pack-asesoria-wide.png">
+<meta property="og:url" content="https://mrnpvn.github.io/flowkit/">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  :root{
+    --bg:#0B1020; --panel:#101A2F; --panel2:#0E1626; --line:#1E2A44;
+    --ink:#E8EFF9; --muted:#9AA9C0; --teal:#22D3A5; --teal-dark:#0F9D7A;
+    --radius:14px; --max:1080px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:var(--teal);text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+  header{border-bottom:1px solid var(--line);background:rgba(11,16,32,.92);position:sticky;top:0;z-index:10;backdrop-filter:blur(6px)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{font-family:Georgia,"Times New Roman",serif;font-size:1.35rem;color:var(--ink)}
+  .brand b{color:var(--teal);font-weight:700}
+  nav a{color:var(--muted);margin-left:22px;font-size:.95rem}
+  nav a:hover{color:var(--ink);text-decoration:none}
+  @media(max-width:720px){nav{display:none}}
+  section{padding:76px 0;border-bottom:1px solid var(--line)}
+  .kicker{color:var(--teal);font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin:0 0 14px}
+  h1{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:clamp(2.1rem,5vw,3.3rem);line-height:1.12;margin:0 0 18px;letter-spacing:-.01em}
+  h1 em{color:var(--teal);font-style:normal}
+  .lead{font-size:1.12rem;color:var(--muted);max-width:640px;margin:0 0 28px}
+  .cta{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .btn{display:inline-block;padding:13px 22px;border-radius:10px;font-weight:600;font-size:.98rem;border:1px solid transparent}
+  .btn.primary{background:var(--teal);color:#06231B}
+  .btn.primary:hover{background:#1FC197;text-decoration:none}
+  .btn.ghost{border-color:var(--line);color:var(--ink)}
+  .btn.ghost:hover{border-color:var(--teal);text-decoration:none}
+  .trust{margin-top:20px;color:var(--muted);font-size:.88rem}
+  .trust span{white-space:nowrap}
+  .trust i{color:var(--teal);font-style:normal;margin-right:6px}
+  h2{font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:clamp(1.6rem,3.2vw,2.2rem);margin:0 0 10px}
+  .sub{color:var(--muted);max-width:680px;margin:0 0 34px}
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(2,minmax(0,1fr))}
+  @media(max-width:760px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+  .card h3{margin:0 0 8px;font-size:1.02rem;line-height:1.35}
+  .card p{margin:0 0 14px;color:var(--muted);font-size:.93rem}
+  .card .tag{display:inline-block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);border:1px solid rgba(34,211,165,.35);border-radius:999px;padding:3px 10px;margin-bottom:12px}
+  .card .go{font-size:.9rem;font-weight:600}
+  .pack{display:grid;grid-template-columns:1.15fr .85fr;gap:32px;align-items:start}
+  @media(max-width:860px){.pack{grid-template-columns:1fr}}
+  ul.check{list-style:none;padding:0;margin:0}
+  ul.check li{position:relative;padding-left:26px;margin-bottom:12px;color:var(--ink)}
+  ul.check li:before{content:"✓";position:absolute;left:0;top:0;color:var(--teal);font-weight:700}
+  ul.check li small{display:block;color:var(--muted);font-size:.86rem}
+  .price{background:var(--panel2);border:1px solid var(--teal);border-radius:var(--radius);padding:28px;position:sticky;top:88px}
+  .price .now{font-family:Georgia,serif;font-size:3rem;line-height:1;color:var(--ink);margin:6px 0 4px}
+  .price .before{color:var(--muted);text-decoration:line-through;font-size:1rem}
+  .price .note{color:var(--muted);font-size:.86rem;margin:10px 0 18px}
+  .price .btn{width:100%;text-align:center}
+  .price .mini{font-size:.8rem;color:var(--muted);text-align:center;margin-top:10px}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;counter-reset:s}
+  @media(max-width:760px){.steps{grid-template-columns:1fr}}
+  .step{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+  .step:before{counter-increment:s;content:"0" counter(s);display:block;font-family:Georgia,serif;font-size:1.6rem;color:var(--teal);margin-bottom:10px}
+  .step h3{margin:0 0 6px;font-size:1rem}
+  .step p{margin:0;color:var(--muted);font-size:.92rem}
+  details{border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:10px;background:var(--panel2)}
+  details summary{cursor:pointer;font-weight:600}
+  details p{margin:10px 0 0;color:var(--muted);font-size:.94rem}
+  footer{padding:36px 0;color:var(--muted);font-size:.86rem}
+  footer .wrap{display:flex;gap:18px;flex-wrap:wrap;justify-content:space-between}
+  footer a{color:var(--muted);text-decoration:underline}
+</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "FlowKit — Pack Asesoría",
+  "description": "3 automatizaciones n8n para asesorías: cobros vencidos, onboarding documental y panel de KPIs. Incluye guías, plan de 30 días y plantillas RGPD.",
+  "brand": {"@type": "Brand", "name": "FlowKit"},
+  "image": "https://mrnpvn.github.io/flowkit/assets/pack-asesoria-wide.png",
+  "url": "https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria",
+  "offers": {"@type": "Offer", "price": "29", "priceCurrency": "EUR", "availability": "https://schema.org/InStock", "url": "https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria"}
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="#">Flow<b>Kit</b></a>
+    <nav>
+      <a href="#gratis">Flujos gratis</a>
+      <a href="#pack">Pack Asesoría</a>
+      <a href="#empezar">Cómo empezar</a>
+      <a href="#faq">FAQ</a>
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">Plantillas n8n para pymes y despachos</p>
+    <h1>Automatiza tu despacho.<br><em>Sin código, sin cuotas.</em></h1>
+    <p class="lead">Flujos n8n probados para asesorías, clínicas e inmobiliarias: importas un archivo, conectas tus cuentas y funcionan. Empieza gratis; el Pack Asesoría añade las versiones de producción.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria">Pack Asesoría — 29 €</a>
+      <a class="btn ghost" href="#gratis">Probar un flujo gratis</a>
+    </div>
+    <p class="trust"><span><i>✓</i>4 flujos gratis</span> &nbsp;·&nbsp; <span><i>✓</i>Licencia MIT</span> &nbsp;·&nbsp; <span><i>✓</i>n8n 1.40+</span> &nbsp;·&nbsp; <span><i>✓</i>Datos en tu instancia</span></p>
+  </div>
+</section>
+
+<section id="gratis">
+  <div class="wrap">
+    <h2>Cuatro flujos gratis para empezar hoy</h2>
+    <p class="sub">Descarga el <code>.json</code>, impórtalo en n8n y conéctalo a tus cuentas. Sin registro y sin coste: así compruebas el nivel antes de comprar nada.</p>
+    <div class="grid">
+      <article class="card">
+        <span class="tag">General · ES / EN</span>
+        <h3>Captación de leads web</h3>
+        <p>Formulario web → hoja de cálculo → aviso por Telegram. El lead deja de perderse en la bandeja de entrada.</p>
+        <a class="go" href="https://github.com/mrnpvn/flowkit/tree/main/workflows/general" target="_blank" rel="noopener">Ver flujo →</a>
+      </article>
+      <article class="card">
+        <span class="tag">Asesoría · ES</span>
+        <h3>Alta de cliente + plazos fiscales</h3>
+        <p>Formulario de alta → hoja Clientes → aviso 21 días antes de cada modelo (IVA, IRPF y 6 más). Un solo mensaje al día.</p>
+        <a class="go" href="https://github.com/mrnpvn/flowkit/blob/main/workflows/asesoria/alta-cliente-plazos.json" target="_blank" rel="noopener">Ver flujo →</a>
+      </article>
+      <article class="card">
+        <span class="tag">Clínica · ES / EN</span>
+        <h3>Recordatorios de cita con confirmar y cancelar</h3>
+        <p>Aviso la víspera con enlaces firmados; el paciente confirma o cancela y el hueco se libera con aviso al equipo.</p>
+        <a class="go" href="https://github.com/mrnpvn/flowkit/tree/main/workflows/clinica" target="_blank" rel="noopener">Ver flujo →</a>
+      </article>
+      <article class="card">
+        <span class="tag">Inmobiliaria · ES</span>
+        <h3>Captación y respuesta inmediata</h3>
+        <p>El lead se puntúa de 0 a 100, se empareja con la cartera y se reparte por zona al comercial. Aviso si queda sin atender 24 h.</p>
+        <a class="go" href="https://github.com/mrnpvn/flowkit/blob/main/workflows/inmobiliaria/captacion-leads-respuesta.json" target="_blank" rel="noopener">Ver flujo →</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="pack">
+  <div class="wrap pack">
+    <div>
+      <h2>Pack Asesoría: del aviso suelto al despacho automatizado</h2>
+      <p class="sub">Tres flujos de producción que cubren el ciclo completo —cobrar, dar de alta y medir— con reintentos, aviso de errores y sin duplicados. Documentación en español y plantillas legales incluidas.</p>
+      <ul class="check">
+        <li>Cobros vencidos — recordatorios escalonados a 5 / 15 / 30 días, informe semanal de cartera y enlace de pago.<small>29 nodos. Deja de perseguir facturas a mano.</small></li>
+        <li>Onboarding documental — checklist por servicio, seguimientos a 3 / 7 / 14 / 21 días y portal para que el cliente suba documentos.<small>51 nodos. El alta deja de depender de la memoria.</small></li>
+        <li>Panel de KPIs — 27 indicadores de cobros, expedientes y documentación, histórico semanal y resumen por Telegram.<small>20 nodos. Decisiones con datos, no con sensaciones.</small></li>
+        <li>Guías, plan de implantación de 30 días y 3 plantillas RGPD + 2 de mensajes.<small>Para usarlo con clientes reales desde el primer día.</small></li>
+        <li>Licencia comercial y 12 meses de actualizaciones.<small>Pago único, sin suscripción.</small></li>
+      </ul>
+    </div>
+    <aside class="price">
+      <p class="kicker" style="margin-bottom:0">Precio de lanzamiento</p>
+      <div class="now">29 €</div>
+      <div><span class="before">39 €</span> · 20 primeras unidades</div>
+      <p class="note">Pago único. Los tres flujos en <code>.json</code> + guías + plantillas RGPD + plan de 30 días. Garantía de devolución de Gumroad.</p>
+      <a class="btn primary" href="https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria">Comprar el Pack Asesoría</a>
+      <p class="mini">Entrega inmediata · IVA incluido cuando aplique</p>
+    </aside>
+  </div>
+</section>
+
+<section id="empezar">
+  <div class="wrap">
+    <h2>Empezar tarda menos que leer esta página</h2>
+    <p class="sub">Los flujos gratuitos no piden nada. Los del pack llegan por correo tras la compra, con la guía de implantación.</p>
+    <div class="steps">
+      <div class="step"><h3>Descarga o compra</h3><p>Elige un flujo gratis en GitHub o el Pack Asesoría en Gumroad. Recibes los <code>.json</code> al momento.</p></div>
+      <div class="step"><h3>Importa en n8n</h3><p>Workflows → Import from File. Cada nodo trae una nota dentro explicando qué hace y qué hay que configurar.</p></div>
+      <div class="step"><h3>Conecta y activa</h3><p>Elige tus credenciales (Google Sheets, Telegram, email), edita los textos y pulsa Active. Guía paso a paso incluida.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>Preguntas frecuentes</h2>
+    <p class="sub">Lo que preguntan antes de comprar.</p>
+    <details><summary>¿Necesito n8n Cloud o puedo usar el mío?</summary><p>Los dos. Los flujos funcionan en n8n self-hosted (gratis) y en n8n Cloud, versión 1.40 o superior. Solo necesitas las cuentas de las herramientas que use cada flujo: Google Sheets, Telegram y email en los ejemplos.</p></details>
+    <details><summary>¿Tengo que saber programar?</summary><p>No. Los nodos de código ya vienen escritos y probados; se editan los textos y las credenciales, nada más. Cada flujo lleva notas dentro de n8n explicando cada paso y una guía en español.</p></details>
+    <details><summary>¿Qué pasa con los datos de mis clientes?</summary><p>Se quedan en tu instancia de n8n, con tus credenciales. No pasan por servidores nuestros. El pack incluye plantillas RGPD (registro de actividades, información al cliente y encargo de tratamiento) y avisos específicos para datos de salud en clínicas.</p></details>
+    <details><summary>¿Incluye actualizaciones y soporte?</summary><p>El Pack Asesoría incluye 12 meses de actualizaciones de la versión 1.x sin coste. El soporte se atiende por email desde Gumroad; los flujos gratuitos, por issues en GitHub.</p></details>
+    <details><summary>¿Puedo usarlo con clientes y cobrar por ello?</summary><p>Sí: la licencia del pack es comercial. Puedes implantar los flujos en los despachos de tus clientes. No se permite revender los archivos como plantillas.</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 FlowKit · Flujos n8n para pymes y despachos</div>
+    <div>
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="https://mrnpvn.gumroad.com" target="_blank" rel="noopener">Tienda</a> ·
+      <a href="https://github.com/mrnpvn/flowkit/blob/main/LICENSE" target="_blank" rel="noopener">Licencia MIT (gratuitos)</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
