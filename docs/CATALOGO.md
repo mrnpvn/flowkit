@@ -61,7 +61,7 @@ Estados: **✅ listo** (probado, se puede importar ya) · **🚧 en construcció
 - **Diferencias con la versión ES:** nombres de columna, estados y textos en inglés (`Pending` / `Confirmed` / `Cancelled` / `Attended`), y los enlaces llevan también fecha y hora para que el aviso de cancelación indique el hueco exacto sin consultar la hoja.
 - **Qué necesitas:** Google Sheets, bot de Telegram, cuenta SMTP y URL pública de n8n. n8n 1.40+.
 - **Datos personales:** identificativos y de contacto + existencia de una cita (dato de salud, art. 9 RGPD). El email no incluye tratamiento ni motivo clínico.
-- **Estado:** importado y reexportado sin errores en n8n 2.43.8; enviado a la librería de plantillas de n8n el 20-oct.
+- **Estado:** importado y reexportado sin errores en n8n 2.43.8; preparado para la librería de plantillas de n8n (envío pendiente de revisión).
 
 ---
 
