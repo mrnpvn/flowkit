@@ -126,6 +126,24 @@ Los flujos premium amplían los gratuitos: más pasos, versiones de producción 
 - **Tiempo de puesta en marcha:** 30 minutos.
 - **Nota legal:** el flujo persigue documentación, no evalúa solvencia ni adopta decisiones automatizadas sobre personas. El portal es de solo lectura y usa token aleatorio; no borres filas con enlaces vivos.
 
+### Panel de KPIs — cobros, expedientes y documentación en una hoja
+
+- **Archivo:** `workflows/asesoria/kpi-panel.json`
+- **Guía:** [`FLUJO-KPI-PANEL.md`](FLUJO-KPI-PANEL.md)
+- **Vertical:** asesorías, gestorías, despachos contables
+- **Disparadores:** lunes 08:00 (semanal) + ejecución manual de prueba + Error Trigger
+- **Qué hace:**
+  1. **Lee y calcula** — cruza las hojas `Facturas`, `Onboarding` y `Docs` y calcula 27 KPIs: cartera pendiente y vencida por tramos, cobrado en 30 días, días medios de cobro, mayor deudor, expedientes abiertos/completados, tasa de finalización, antigüedad media, bloqueados +21 días y estado de la documentación.
+  2. **Panel** — limpia y reescribe la pestaña `KPIs` (27 filas, valores numéricos + unidad + detalle) con semáforo de salud de cobro y salud general.
+  3. **Histórico** — añade una fila por semana en `KPIs_Historico` para gráficos de tendencia.
+  4. **Resumen** — manda a Telegram las cifras clave y **una acción recomendada** (llamar a bloqueados, revisar vencidos o mantener el ritmo).
+  5. **Red de seguridad** — reintentos 3× en los 6 nodos de Sheets y los 2 de Telegram; Error Trigger con nodo y mensaje exactos.
+- **Qué necesitas:** libro de Google Sheets con las pestañas `Facturas`, `Onboarding`, `Docs`, `KPIs` y `KPIs_Historico` (cabeceras en la guía), bot de Telegram. n8n 1.40+.
+- **Datos personales que trata:** los mismos que los flujos de cobros y onboarding (identificativos, contacto, importes y estado de documentos). El panel se queda en tu libro y tu chat privado; no se envía nada a clientes. Base legal: interés legítimo en el control de la operación (art. 6.1.f RGPD).
+- **Ahorro estimado:** sustituye el repaso manual de hojas y el informe mensual del despacho; 30-60 minutos al mes y, sobre todo, detecta antes la deuda vieja y los expedientes parados.
+- **Tiempo de puesta en marcha:** 10 minutos.
+- **Nota legal:** el panel informa, no decide: no hay decisiones automatizadas sobre personas. Los umbrales (tramos de deuda y semáforo) son editables y responsabilidad del despacho.
+
 ---
 
 ## Historial de versiones
@@ -138,3 +156,4 @@ Los flujos premium amplían los gratuitos: más pasos, versiones de producción 
 | 2026-10-19 | Nuevo flujo `inmobiliaria/captacion-leads-respuesta` v1.0.0 (formulario + puntuación + emparejamiento con cartera + email al lead + reparto por zona + aviso de leads sin atender) + guía `FLUJO-INMOBILIARIA.md`. |
 | 2026-10-20 | Flujo **premium** `asesoria/cobros-vencidos` v1.0.0 (recordatorios escalonados 5/15/30 días + informe semanal de cartera + enlace de pago + Error Trigger) + guía `FLUJO-COBROS-VENCIDOS.md`. |
 | 2026-10-20 | Flujo **premium** `asesoria/onboarding-documental` v1.0.0 (alta con checklist por servicio + seguimiento 3/7/14/21 días + portal privado del cliente + registro de recepción + informe semanal + Error Trigger) + guía `FLUJO-ONBOARDING-DOCUMENTAL.md`. |
+| 2026-10-20 | Flujo **premium** `asesoria/kpi-panel` v1.0.0 (27 KPIs de cobros, expedientes y documentación + panel en Sheets + histórico semanal + resumen y acción por Telegram + Error Trigger) + guía `FLUJO-KPI-PANEL.md`. |

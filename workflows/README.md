@@ -25,5 +25,8 @@ Pasos detallados y credenciales: [`../docs/INSTALACION-N8N.md`](../docs/INSTALAC
 | Recordatorio de cita + recuperación de cancelaciones | `clinica/` | ✅ listo |
 | Appointment reminders with confirm/cancel links (EN, para la librería n8n) | `clinica/` | ✅ listo |
 | Captación de leads + respuesta automática | `inmobiliaria/` | ✅ listo |
+| 💎 Cobros vencidos (recordatorios + informe + enlace de pago) | `asesoria/` | 💎 premium |
+| 💎 Onboarding documental (checklist + seguimiento + portal) | `asesoria/` | 💎 premium |
+| 💎 Panel de KPIs (cobros, expedientes y documentación) | `asesoria/` | 💎 premium |
 
 Las fichas completas (qué hace, qué datos trata, tiempo de puesta en marcha) están en [`../docs/CATALOGO.md`](../docs/CATALOGO.md).
