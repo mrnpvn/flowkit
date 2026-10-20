@@ -1,0 +1,726 @@
+{
+  "name": "Inmobiliaria: captación de leads y respuesta automática",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Inmobiliaria: captación de leads y respuesta automática\n\n**Qué hace**\n1. Formulario web de contacto (comprar, alquilar o vender).\n2. Normaliza y puntúa el lead (0-100) según datos y consentimiento.\n3. Lee la cartera de la hoja `Inmuebles` y elige hasta 3 coincidencias.\n4. Guarda el lead en `Leads` y lo asigna por zona.\n5. Responde al lead por email (solo con consentimiento) y avisa al equipo por Telegram.\n6. Cada día a las 10:00 recuerda los leads en estado `Nuevo` con más de 24 h.\n\n**Configura**\n- Credenciales de Google Sheets, SMTP y Telegram en los nodos marcados.\n- En `Clasificar y emparejar`: `AGENCIA` y el mapa `AGENTES` por zona.\n- Hojas `Inmuebles` y `Leads` con las cabeceras de la guía.\n- n8n con URL pública si el formulario debe ser accesible desde fuera.\n\n**Privacidad:** no se envía email sin consentimiento. Sin IA ni APIs de pago.\nGuía: docs/FLUJO-INMOBILIARIA.md",
+        "height": 560,
+        "width": 480,
+        "color": 5
+      },
+      "id": "b1a2c3d4-0000-4000-8000-000000000001",
+      "name": "Léeme primero",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -1300,
+        -460
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Parte A - Nuevo lead y respuesta\nFormulario -> normalizar -> leer cartera -> clasificar y emparejar -> guardar -> email + Telegram.",
+        "height": 320,
+        "width": 2160,
+        "color": 4
+      },
+      "id": "b1a2c3d4-0000-4000-8000-000000000002",
+      "name": "Parte A - Nuevo lead",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        -250
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Parte B - Leads sin atender\nCada día a las 10:00 revisa la hoja `Leads` y avisa de los que siguen en estado `Nuevo` más de 24 h.",
+        "height": 280,
+        "width": 1000,
+        "color": 6
+      },
+      "id": "b1a2c3d4-0000-4000-8000-000000000003",
+      "name": "Parte B - Leads sin atender",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -780,
+        200
+      ]
+    },
+    {
+      "parameters": {
+        "formTitle": "Cuéntanos qué inmueble buscas",
+        "formDescription": "Deja tus datos y un comercial revisará tu solicitud. Si buscas vender, indícalo en Operación.",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Nombre",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Teléfono",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Operación",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Comprar"
+                  },
+                  {
+                    "option": "Alquilar"
+                  },
+                  {
+                    "option": "Vender"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Tipo de inmueble",
+              "fieldType": "dropdown",
+              "requiredField": true,
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Piso"
+                  },
+                  {
+                    "option": "Casa"
+                  },
+                  {
+                    "option": "Chalet"
+                  },
+                  {
+                    "option": "Local"
+                  },
+                  {
+                    "option": "Oficina"
+                  },
+                  {
+                    "option": "Terreno"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Zona",
+              "fieldType": "text",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Presupuesto (EUR)",
+              "fieldType": "number",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "Habitaciones",
+              "fieldType": "number",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "Mensaje",
+              "fieldType": "textarea",
+              "requiredField": false
+            },
+            {
+              "fieldLabel": "Acepto la política de privacidad y el tratamiento de mis datos para gestionar esta solicitud",
+              "fieldType": "checkbox",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "path": "flowkit-inmobiliaria",
+          "appendAttribution": false
+        }
+      },
+      "id": "b1a2c3d4-0000-4000-8000-000000000010",
+      "name": "Formulario nuevo lead",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -700,
+        0
+      ],
+      "webhookId": "c4d5e6f7-1a2b-4c3d-8e9f-0a1b2c3d4e5f"
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "inm01",
+              "name": "nombre",
+              "value": "={{ $json[\"Nombre\"] || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "inm02",
+              "name": "email",
+              "value": "={{ $json[\"Email\"] || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "inm03",
+              "name": "telefono",
+              "value": "={{ $json[\"Teléfono\"] || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "inm04",
+              "name": "operacion",
+              "value": "={{ $json[\"Operación\"] || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "inm05",
+              "name": "tipo",
+              "value": "={{ $json[\"Tipo de inmueble\"] || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "inm06",
+              "name": "zona",
+              "value": "={{ $json[\"Zona\"] || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "inm07",
+              "name": "presupuesto",
+              "value": "={{ $json[\"Presupuesto (EUR)\"] || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "inm08",
+              "name": "habitaciones",
+              "value": "={{ $json[\"Habitaciones\"] || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "inm09",
+              "name": "mensaje",
+              "value": "={{ $json[\"Mensaje\"] || \"\" }}",
+              "type": "string"
+            },
+            {
+              "id": "inm10",
+              "name": "consentimiento",
+              "value": "={{ $json[\"Acepto la política de privacidad y el tratamiento de mis datos para gestionar esta solicitud\"] ? \"Sí\" : \"No\" }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b1a2c3d4-0000-4000-8000-000000000011",
+      "name": "Normalizar lead",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -460,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "id": "b1a2c3d4-0000-4000-8000-000000000012",
+      "name": "Leer cartera de inmuebles",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -220,
+        0
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const AGENCIA = 'Tu inmobiliaria';\nconst AGENTE_DEFECTO = 'Equipo comercial';\nconst AGENTES = {\n  centro: 'Ana',\n  norte: 'Luis',\n  sur: 'Marta',\n  este: 'Jorge',\n  oeste: 'Elena'\n};\n\nconst NL = String.fromCharCode(10);\nconst lead = $('Normalizar lead').first().json;\nconst inmuebles = $input.all().map(i => i.json);\n\nfunction texto(v) { return String(v == null ? '' : v).trim(); }\nfunction normal(v) {\n  return texto(v).toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').replace(/\\s+/g, ' ');\n}\n\nfunction num(v) {\n  let s = texto(v).replace(/[^\\d,.-]/g, '');\n  if (!s) return 0;\n  if (s.indexOf('.') >= 0 && s.indexOf(',') >= 0) {\n    s = s.replace(/\\./g, '').replace(',', '.');\n  } else if (s.indexOf(',') >= 0) {\n    const partes = s.split(',');\n    s = (partes.length === 2 && partes[1].length <= 2) ? s.replace(',', '.') : s.replace(/,/g, '');\n  } else {\n    const p = s.split('.');\n    if (p.length > 1 && p[p.length - 1].length === 3) s = s.replace(/\\./g, '');\n  }\n  const n = Number(s);\n  return isNaN(n) ? 0 : n;\n}\n\nfunction eur(n) {\n  if (!n) return '';\n  return n.toLocaleString('es-ES', { maximumFractionDigits: 0 }) + ' EUR';\n}\n\nconst nombre = texto(lead.nombre) || 'sin nombre';\nconst email = texto(lead.email).toLowerCase();\nconst telefono = texto(lead.telefono);\nconst operacion = texto(lead.operacion);\nconst tipo = texto(lead.tipo);\nconst zona = texto(lead.zona);\nconst presupuesto = num(lead.presupuesto);\nconst habitaciones = num(lead.habitaciones);\nconst mensaje = texto(lead.mensaje);\nconst consentimiento = normal(lead.consentimiento);\nconst consent = consentimiento === 'si' || consentimiento === 'yes' || consentimiento === 'true' || consentimiento === 'on';\n\nlet score = 30;\nif (email) score += 15;\nif (telefono) score += 15;\nif (presupuesto > 0) score += 10;\nif (zona) score += 10;\nif (mensaje.length >= 20) score += 10;\nif (consent) score += 10;\nscore = Math.min(100, score);\nconst prioridad = score >= 70 ? 'Alta' : (score >= 45 ? 'Media' : 'Baja');\n\nconst z = normal(zona);\nlet comercial = AGENTE_DEFECTO;\nfor (const clave of Object.keys(AGENTES)) {\n  if (z.indexOf(clave) >= 0) { comercial = AGENTES[clave]; break; }\n}\n\nconst op = normal(operacion);\nconst quiereComprar = op.indexOf('comprar') === 0;\nconst quiereAlquilar = op.indexOf('alquilar') === 0;\nconst quiereVender = op.indexOf('vender') === 0;\n\nconst candidatos = [];\nfor (const p of inmuebles) {\n  const estado = normal(p.Estado);\n  if (estado && estado !== 'disponible') continue;\n  const propOp = normal(p.Operacion);\n  if (quiereComprar && propOp.indexOf('venta') < 0) continue;\n  if (quiereAlquilar && propOp.indexOf('alquiler') < 0) continue;\n  if (quiereVender) continue;\n\n  const pt = normal(p.Tipo);\n  const lt = normal(tipo);\n  if (lt && pt && pt !== lt && pt.indexOf(lt) < 0 && lt.indexOf(pt) < 0) continue;\n  const precio = num(p.Precio);\n  if (presupuesto && precio && precio > presupuesto * 1.1) continue;\n\n  let s = 0;\n  let zonaOk = false;\n  const pz = normal(p.Zona);\n  if (z && pz) {\n    if (pz.indexOf(z) >= 0 || z.indexOf(pz) >= 0) { s += 30; zonaOk = true; }\n    else if (pz.split(' ').some(w => w.length > 2 && z.indexOf(w) >= 0)) { s += 15; zonaOk = true; }\n  }\n  if (lt && pt) s += 20;\n  const hab = num(p.Habitaciones);\n  if (habitaciones && hab) {\n    if (hab === habitaciones) s += 15;\n    else if (Math.abs(hab - habitaciones) === 1) s += 8;\n  }\n  if (presupuesto && precio) {\n    if (precio <= presupuesto) s += 25;\n    else s += 10;\n  }\n  if (s >= 10) candidatos.push({ p: p, score: s, precio: precio, zonaOk: zonaOk });\n}\n\ncandidatos.sort((a, b) => b.score - a.score);\nconst top = candidatos.slice(0, 3);\n\nfunction ficha(c) {\n  const p = c.p;\n  const ref = texto(p.ID) ? ' [' + texto(p.ID) + ']' : '';\n  const detalle = [];\n  if (texto(p.Zona)) detalle.push(texto(p.Zona));\n  if (num(p.Habitaciones)) detalle.push(num(p.Habitaciones) + ' hab.');\n  if (num(p.Superficie)) detalle.push(num(p.Superficie) + ' m2');\n  if (c.precio) detalle.push(eur(c.precio));\n  return '- ' + (texto(p.Titulo) || 'Inmueble') + ref + (detalle.length ? ' — ' + detalle.join(' · ') : '');\n}\n\nconst listaInmuebles = top.map(ficha);\nconst inmueblesTexto = listaInmuebles.length ? listaInmuebles.join(NL) : 'Sin coincidencias directas en la cartera actual.';\nconst inmueblesFila = top.map(c => (texto(c.p.ID) || texto(c.p.Titulo)) + ' (' + c.score + ')').join(' | ');\n\nconst queBusca = quiereVender\n  ? 'valorar tu inmueble' + (zona ? ' en ' + zona : '')\n  : ((quiereAlquilar ? 'alquilar' : 'comprar') + (tipo ? ' un inmueble de tipo ' + tipo : ' un inmueble') + (zona ? ' en ' + zona : ''));\n\nconst intro = quiereVender\n  ? 'Hemos recibido tu solicitud para valorar tu inmueble' + (zona ? ' en ' + zona : '') + '. Un comercial revisará los datos y se pondrá en contacto contigo.'\n  : 'Hemos recibido tu solicitud para ' + queBusca + '.';\nconst seleccion = quiereVender\n  ? 'Un comercial revisará la información y te propondrá una valoración sin compromiso.'\n  : (listaInmuebles.length\n      ? 'Estas son las opciones de nuestra cartera que mejor encajan con lo que buscas:' + NL + NL + inmueblesTexto\n      : 'Un comercial revisará tu solicitud y te enviará una selección personalizada.');\nconst emailCuerpo = [\n  'Hola ' + nombre + ':',\n  '',\n  intro,\n  '',\n  seleccion,\n  '',\n  'Si quieres ajustar la búsqueda (zona, presupuesto o tipo de inmueble), responde a este correo y lo tendremos en cuenta.',\n  '',\n  'Has recibido este correo porque has enviado una solicitud de información a ' + AGENCIA + '. Tus datos se tratan únicamente para gestionar tu solicitud. Puedes ejercer tus derechos de acceso, rectificación y supresión respondiendo a este correo.',\n  '',\n  'Un saludo,',\n  AGENCIA\n].join(NL);\n\nconst ahora = new Date();\nconst pad = n => String(n).padStart(2, '0');\nconst id = 'LEAD-' + ahora.getFullYear() + pad(ahora.getMonth() + 1) + pad(ahora.getDate()) + '-' + pad(ahora.getHours()) + pad(ahora.getMinutes()) + '-' + Math.random().toString(36).slice(2, 6).toUpperCase();\nconst fecha = ahora.getFullYear() + '-' + pad(ahora.getMonth() + 1) + '-' + pad(ahora.getDate()) + ' ' + pad(ahora.getHours()) + ':' + pad(ahora.getMinutes());\n\nconst tgLineas = [\n  'Nuevo lead [' + prioridad + ' · ' + score + '/100]',\n  '',\n  'Nombre: ' + nombre,\n  'Teléfono: ' + (telefono || 'no indicado'),\n  'Email: ' + (email || 'no indicado'),\n  'Operación: ' + (operacion || '-'),\n  'Tipo: ' + (tipo || '-') + ' · Zona: ' + (zona || '-'),\n  'Presupuesto: ' + (presupuesto ? eur(presupuesto) : 'no indicado'),\n  'Asignado a: ' + comercial,\n  'Coincidencias: ' + top.length + (top.length ? ' -> ' + top.map(c => texto(c.p.ID) || texto(c.p.Titulo)).join(', ') : ''),\n  'ID: ' + id\n];\nif (!consent) tgLineas.push('AVISO: sin consentimiento, no se ha enviado email automático.');\nconst tgTexto = tgLineas.join(NL);\n\nreturn [{\n  json: {\n    id: id,\n    fecha: fecha,\n    nombre: nombre,\n    email: email,\n    telefono: telefono,\n    operacion: operacion,\n    tipo: tipo,\n    zona: zona,\n    presupuesto: presupuesto || '',\n    habitaciones: habitaciones || '',\n    mensaje: mensaje,\n    consentimiento: consent ? 'Sí' : 'No',\n    puntuacion: score,\n    prioridad: prioridad,\n    comercial: comercial,\n    inmuebles: inmueblesFila,\n    estado: 'Nuevo',\n    email_to: email,\n    email_asunto: 'Tu solicitud inmobiliaria - ' + AGENCIA,\n    email_cuerpo: emailCuerpo,\n    tg_texto: tgTexto\n  }\n}];"
+      },
+      "id": "b1a2c3d4-0000-4000-8000-000000000013",
+      "name": "Clasificar y emparejar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        20,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "manual",
+        "includeOtherFields": false,
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fila01",
+              "name": "ID",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "fila02",
+              "name": "Fecha",
+              "value": "={{ $json.fecha }}",
+              "type": "string"
+            },
+            {
+              "id": "fila03",
+              "name": "Nombre",
+              "value": "={{ $json.nombre }}",
+              "type": "string"
+            },
+            {
+              "id": "fila04",
+              "name": "Email",
+              "value": "={{ $json.email }}",
+              "type": "string"
+            },
+            {
+              "id": "fila05",
+              "name": "Telefono",
+              "value": "={{ $json.telefono }}",
+              "type": "string"
+            },
+            {
+              "id": "fila06",
+              "name": "Operacion",
+              "value": "={{ $json.operacion }}",
+              "type": "string"
+            },
+            {
+              "id": "fila07",
+              "name": "Tipo",
+              "value": "={{ $json.tipo }}",
+              "type": "string"
+            },
+            {
+              "id": "fila08",
+              "name": "Zona",
+              "value": "={{ $json.zona }}",
+              "type": "string"
+            },
+            {
+              "id": "fila09",
+              "name": "Presupuesto",
+              "value": "={{ $json.presupuesto }}",
+              "type": "string"
+            },
+            {
+              "id": "fila10",
+              "name": "Habitaciones",
+              "value": "={{ $json.habitaciones }}",
+              "type": "string"
+            },
+            {
+              "id": "fila11",
+              "name": "Mensaje",
+              "value": "={{ $json.mensaje }}",
+              "type": "string"
+            },
+            {
+              "id": "fila12",
+              "name": "Consentimiento",
+              "value": "={{ $json.consentimiento }}",
+              "type": "string"
+            },
+            {
+              "id": "fila13",
+              "name": "Puntuacion",
+              "value": "={{ $json.puntuacion }}",
+              "type": "string"
+            },
+            {
+              "id": "fila14",
+              "name": "Prioridad",
+              "value": "={{ $json.prioridad }}",
+              "type": "string"
+            },
+            {
+              "id": "fila15",
+              "name": "Comercial",
+              "value": "={{ $json.comercial }}",
+              "type": "string"
+            },
+            {
+              "id": "fila16",
+              "name": "Inmuebles",
+              "value": "={{ $json.inmuebles }}",
+              "type": "string"
+            },
+            {
+              "id": "fila17",
+              "name": "Estado",
+              "value": "={{ $json.estado }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b1a2c3d4-0000-4000-8000-000000000014",
+      "name": "Preparar fila del lead",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        280,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": []
+        },
+        "options": {}
+      },
+      "id": "b1a2c3d4-0000-4000-8000-000000000015",
+      "name": "Guardar lead en Leads",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        540,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "inm-if-01",
+              "leftValue": "={{ $('Clasificar y emparejar').first().json.email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "inm-if-02",
+              "leftValue": "={{ $('Clasificar y emparejar').first().json.consentimiento }}",
+              "rightValue": "Sí",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b1a2c3d4-0000-4000-8000-000000000016",
+      "name": "Responder por email",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        800,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "",
+        "toEmail": "={{ $('Clasificar y emparejar').first().json.email_to }}",
+        "subject": "={{ $('Clasificar y emparejar').first().json.email_asunto }}",
+        "emailFormat": "text",
+        "text": "={{ $('Clasificar y emparejar').first().json.email_cuerpo }}",
+        "options": {}
+      },
+      "id": "b1a2c3d4-0000-4000-8000-000000000017",
+      "name": "Email de respuesta al lead",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1080,
+        -110
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "",
+        "text": "={{ $('Clasificar y emparejar').first().json.tg_texto }}",
+        "additionalFields": {}
+      },
+      "id": "b1a2c3d4-0000-4000-8000-000000000018",
+      "name": "Aviso lead al equipo",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1360,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "days",
+              "daysInterval": 1,
+              "triggerAtHour": 10,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "b1a2c3d4-0000-4000-8000-000000000020",
+      "name": "Cada día a las 10:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -700,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "read",
+        "documentId": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "id": "b1a2c3d4-0000-4000-8000-000000000021",
+      "name": "Leer leads",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        -460,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForAllItems",
+        "jsCode": "const NL = String.fromCharCode(10);\nconst AHORA = new Date();\nconst LIMITE_HORAS = 24;\n\nfunction parseFecha(v) {\n  if (!v) return null;\n  if (v instanceof Date) return v;\n  const s = String(v).trim();\n  if (!s) return null;\n  if (/^\\d{4}-\\d{2}-\\d{2}/.test(s)) {\n    const d = new Date(s.replace(' ', 'T'));\n    return isNaN(d.getTime()) ? null : d;\n  }\n  const m = s.match(/^(\\d{1,2})\\/(\\d{1,2})\\/(\\d{4})(?:\\s+(\\d{1,2}):(\\d{2}))?/);\n  if (m) return new Date(Number(m[3]), Number(m[2]) - 1, Number(m[1]), Number(m[4] || 0), Number(m[5] || 0));\n  const d = new Date(s);\n  return isNaN(d.getTime()) ? null : d;\n}\n\nconst pendientes = [];\nfor (const item of $input.all()) {\n  const l = item.json;\n  const estado = String(l.Estado || '').trim().toLowerCase();\n  if (estado !== 'nuevo') continue;\n  const f = parseFecha(l.Fecha);\n  if (!f) continue;\n  const horas = Math.round((AHORA.getTime() - f.getTime()) / 3600000);\n  if (horas < LIMITE_HORAS) continue;\n  pendientes.push({\n    id: String(l.ID || '').trim(),\n    nombre: String(l.Nombre || 'sin nombre').trim(),\n    telefono: String(l.Telefono || 'sin teléfono').trim(),\n    zona: String(l.Zona || '-').trim(),\n    prioridad: String(l.Prioridad || '-').trim(),\n    comercial: String(l.Comercial || 'sin asignar').trim(),\n    horas: horas,\n    fecha: f.getTime()\n  });\n}\n\nif (!pendientes.length) return [];\npendientes.sort((a, b) => a.fecha - b.fecha);\nconst lineas = pendientes.map(l => '- ' + l.id + ' · ' + l.nombre + ' · ' + l.zona + ' · ' + l.prioridad + ' · ' + l.comercial + ' · ' + l.telefono + ' · ' + l.horas + ' h');\nconst texto = 'Leads sin atender (más de 24 h): ' + pendientes.length + NL + NL + lineas.join(NL) + NL + NL + 'Marca Estado = Contactado cuando lo hayas atendido.';\n\nreturn [{ json: { texto: texto, total: pendientes.length } }];"
+      },
+      "id": "b1a2c3d4-0000-4000-8000-000000000022",
+      "name": "Leads sin atender",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -220,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "",
+        "text": "={{ $json.texto }}",
+        "additionalFields": {}
+      },
+      "id": "b1a2c3d4-0000-4000-8000-000000000023",
+      "name": "Recordatorio de leads sin atender",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        40,
+        420
+      ]
+    }
+  ],
+  "connections": {
+    "Formulario nuevo lead": {
+      "main": [
+        [
+          {
+            "node": "Normalizar lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalizar lead": {
+      "main": [
+        [
+          {
+            "node": "Leer cartera de inmuebles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer cartera de inmuebles": {
+      "main": [
+        [
+          {
+            "node": "Clasificar y emparejar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clasificar y emparejar": {
+      "main": [
+        [
+          {
+            "node": "Preparar fila del lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar fila del lead": {
+      "main": [
+        [
+          {
+            "node": "Guardar lead en Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guardar lead en Leads": {
+      "main": [
+        [
+          {
+            "node": "Responder por email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Responder por email": {
+      "main": [
+        [
+          {
+            "node": "Email de respuesta al lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Aviso lead al equipo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email de respuesta al lead": {
+      "main": [
+        [
+          {
+            "node": "Aviso lead al equipo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cada día a las 10:00": {
+      "main": [
+        [
+          {
+            "node": "Leer leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leer leads": {
+      "main": [
+        [
+          {
+            "node": "Leads sin atender",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leads sin atender": {
+      "main": [
+        [
+          {
+            "node": "Recordatorio de leads sin atender",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "meta": {
+    "templateCredsSetupCompleted": false,
+    "flowkit": {
+      "id": "inmobiliaria/captacion-leads-respuesta",
+      "version": "1.0.0",
+      "docs": "https://github.com/mrnpvn/flowkit"
+    }
+  },
+  "tags": []
+}

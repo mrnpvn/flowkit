@@ -51,12 +51,22 @@ Estados: **✅ listo** (probado, se puede importar ya) · **🚧 en construcció
 - **Tiempo de puesta en marcha:** 30–40 minutos.
 - **Nota legal:** requiere consentimiento informado del paciente para los recordatorios, política de privacidad que los mencione y acceso restringido a la hoja y al chat interno. **No diagnostica, no recomienda tratamientos y no toma decisiones clínicas.** Revisa la guía (sección RGPD) antes de usarlo con datos reales.
 
-## 🚧 Inmobiliaria — captación de leads y respuesta automática
+## ✅ Inmobiliaria — captación de leads y respuesta automática
 
+- **Archivo:** `workflows/inmobiliaria/captacion-leads-respuesta.json`
+- **Guía:** [`FLUJO-INMOBILIARIA.md`](FLUJO-INMOBILIARIA.md)
 - **Vertical:** inmobiliarias, agentes, promotoras
-- **Qué hará:** recoger el lead (portal, web o formulario), clasificarlo por interés y zona, repartirlo entre comerciales y disparar una **primera respuesta inmediata** con la ficha del inmueble y una propuesta de visita.
-- **Qué necesitará:** Google Sheets, Telegram, email. Compatible con los portales que ofrecen aviso por correo o API oficial.
-- **Nota:** nunca se hace scraping de plataformas que lo prohíben; solo entradas propias (formulario, correo, API oficial).
+- **Disparador:** formulario web (nuevo lead) + programación diaria a las 10:00 (leads sin atender)
+- **Qué hace:**
+  1. **Captación** — el formulario recoge nombre, contacto, operación (comprar/alquilar/vender), tipo, zona, presupuesto, habitaciones, mensaje y consentimiento; el flujo normaliza los datos, puntúa el lead (0–100) y lo asigna a un comercial por zona.
+  2. **Emparejamiento** — lee la cartera de la hoja `Inmuebles`, descarta los no disponibles, los de otra operación/tipo y los que superan el presupuesto en más de un 10 %, y propone **hasta 3** por encaje.
+  3. **Respuesta** — guarda el lead en `Leads`, envía un email informativo con las opciones (solo con consentimiento) y avisa al equipo por Telegram con prioridad, comercial y referencias.
+  4. **Seguimiento** — cada día a las 10:00 avisa de los leads que siguen en estado `Nuevo` más de 24 h.
+- **Qué necesitas:** una hoja de Google Sheets con las pestañas `Inmuebles` y `Leads` (cabeceras en la guía), un bot de Telegram, una cuenta SMTP y, para el formulario público, una URL pública de n8n. n8n 1.40+.
+- **Datos personales que trata:** identificativos y de contacto (nombre, email, teléfono, zona) y preferencias de búsqueda. El flujo corre en tu propio n8n y **no envía email sin consentimiento**. No introduzcas datos del art. 9 RGPD en el mensaje.
+- **Ahorro estimado:** con 20–40 leads al mes, la respuesta manual uno por uno son 15–30 minutos diarios y los leads fríos se pierden; el flujo responde en segundos y deja el seguimiento en una sola bandeja.
+- **Tiempo de puesta en marcha:** 30–40 minutos.
+- **Nota legal:** la respuesta es informativa; no valora inmuebles, no fija precios ni promete disponibilidad. Confirma precio y estado antes de cerrar una operación. Nunca se hace scraping de plataformas que lo prohíben: usa su API oficial o su aviso por correo. Añade tu denominación social, NIF y política de privacidad al email antes de usarlo en producción.
 
 ---
 
@@ -75,3 +85,4 @@ Precio previsto: **29–79 €** según el pack. Se anunciará en este repositor
 | 2026-10-19 | Publicación del repositorio: estructura, documentación y flujo gratuito `captura-leads-web` v1. |
 | 2026-10-19 | Nuevo flujo `asesoria/alta-cliente-plazos` v1.0.0 (alta de cliente + recordatorio de 8 modelos a 21 días) + guía `FLUJO-ASESORIA.md`. |
 | 2026-10-19 | Nuevo flujo `clinica/recordatorio-citas` v1.0.0 (alta de cita + email 24 h antes + confirmar/cancelar en un clic + aviso de hueco liberado) + guía `FLUJO-CLINICA.md`. |
+| 2026-10-19 | Nuevo flujo `inmobiliaria/captacion-leads-respuesta` v1.0.0 (formulario + puntuación + emparejamiento con cartera + email al lead + reparto por zona + aviso de leads sin atender) + guía `FLUJO-INMOBILIARIA.md`. |
