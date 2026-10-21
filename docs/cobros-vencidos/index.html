@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Facturas vencidas: cómo reclamar sin perder al cliente</title>
+<meta name="description" content="Guía práctica para cobrar facturas vencidas sin quemar la relación: escalera de avisos 5/15/30, errores que alargan la mora y qué medir cada semana.">
+<link rel="canonical" href="https://mrnpvn.github.io/flowkit/cobros-vencidos/">
+<link rel="stylesheet" href="../assets/flowkit.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cobros vencidos: reclamar sin perder al cliente">
+<meta property="og:description" content="La escalera de avisos que funciona, los tres errores que alargan la mora y las cifras que hay que mirar cada semana.">
+<meta property="og:url" content="https://mrnpvn.github.io/flowkit/cobros-vencidos/">
+<meta property="og:image" content="https://mrnpvn.github.io/flowkit/assets/pack-asesoria-wide.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "Facturas vencidas: cómo reclamar sin perder al cliente",
+      "description": "Guía práctica sobre cobros vencidos: escalera de avisos por antigüedad, errores que alargan la mora, métricas de cartera y automatización con n8n.",
+      "datePublished": "2026-10-21",
+      "dateModified": "2026-10-21",
+      "inLanguage": "es",
+      "author": {"@type": "Organization", "name": "FlowKit"},
+      "publisher": {"@type": "Organization", "name": "FlowKit"},
+      "mainEntityOfPage": "https://mrnpvn.github.io/flowkit/cobros-vencidos/",
+      "image": "https://mrnpvn.github.io/flowkit/assets/pack-asesoria-wide.png"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "¿Cuántos días hay que esperar antes de reclamar una factura?", "acceptedAnswer": {"@type": "Answer", "text": "No hay una cifra legal única: depende de lo pactado en el contrato y del plazo de pago aplicable. Lo que sí conviene es que el primer aviso salga a los pocos días del vencimiento, cuando aún se interpreta como un recordatorio administrativo y no como una reclamación."}},
+        {"@type": "Question", "name": "¿Es mejor llamar o escribir?", "acceptedAnswer": {"@type": "Answer", "text": "Escribir primero, siempre. El correo deja constancia de la fecha, del importe y de lo que se pidió. La llamada sirve para desbloquear casos concretos, pero conviene anotar su resultado en el mismo hilo."}},
+        {"@type": "Question", "name": "¿Puedo reclamar intereses de demora?", "acceptedAnswer": {"@type": "Answer", "text": "Puede haber derecho a ellos según el contrato y la normativa aplicable, pero calcularlos y aplicarlos es una decisión jurídica y contable. Este flujo no calcula intereses ni los reclama: se limita a los avisos y al registro."}},
+        {"@type": "Question", "name": "¿Y si el cliente es también amigo o un cliente grande?", "acceptedAnswer": {"@type": "Answer", "text": "El proceso debe ser igual para todos: es lo que evita que la mora dependa de quién llama. Lo que puede cambiar es el tono del segundo nivel y quién firma el tercero, no la existencia del aviso."}},
+        {"@type": "Question", "name": "¿El flujo envía los correos por mí?", "acceptedAnswer": {"@type": "Answer", "text": "Sí, con tu cuenta SMTP y un solo correo por cliente que agrupa todas sus facturas vencidas. Cada nivel de aviso se envía una sola vez y nunca dos el mismo día; el envío queda registrado en la hoja."}},
+        {"@type": "Question", "name": "¿Sirve si trabajo con Google Sheets y no con un ERP?", "acceptedAnswer": {"@type": "Answer", "text": "Sí. El flujo lee una hoja con las facturas y escribe en ella el nivel de aviso y la fecha del último recordatorio. Si ya tienes ERP, puedes exportar la cartera a la hoja o adaptar la lectura."}}
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "FlowKit", "item": "https://mrnpvn.github.io/flowkit/"},
+        {"@type": "ListItem", "position": 2, "name": "Cobros vencidos", "item": "https://mrnpvn.github.io/flowkit/cobros-vencidos/"}
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="../">Flow<b>Kit</b></a>
+    <nav>
+      <a href="../#gratis">Flujos gratis</a>
+      <a href="../#sectores">Por sector</a>
+      <a href="../#pack">Pack Asesoría</a>
+      <a href="../calculadora/">Calculadora</a>
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section>
+  <div class="wrap post">
+    <p class="crumbs"><a href="../">FlowKit</a> / Cobros vencidos</p>
+    <h1>Cobros vencidos: reclamar sin perder al cliente</h1>
+    <p class="lead">Casi nadie pierde dinero por no saber reclamar. Se pierde por reclamar tarde, por reclamar siempre igual o por no reclamar a tiempo porque la tarea da pereza. La cartera no se arregla con un correo más duro: se arregla con un proceso que no dependa de que alguien se acuerde.</p>
+    <div class="cta">
+      <a class="btn primary" href="#escalera">Ver la escalera de avisos</a>
+      <a class="btn ghost" href="../#pack">Cómo lo automatiza el pack</a>
+    </div>
+
+    <h2>El problema no es cobrar: es escalar</h2>
+    <p>Una factura vencida tiene dos problemas a la vez. El primero es el dinero. El segundo, y el que suele decidir el resultado, es la relación: si el primer aviso llega con tono de amenaza, el cliente se pone a la defensiva; si nunca llega, aprende que contigo se puede pagar tarde. Entre esos dos extremos hay una escalera bastante aburrida que funciona casi siempre.</p>
+    <p>La regla es sencilla: <strong>el tono sube con los días, no con el enfado de quien escribe</strong>. Y cada paso tiene que dejar rastro de cuándo se dio, a quién y qué se pidió.</p>
+
+    <h2>Los tres errores que alargan la mora</h2>
+    <table>
+      <thead><tr><th>Error habitual</th><th>Qué provoca</th><th>Qué hacer en su lugar</th></tr></thead>
+      <tbody>
+        <tr><td><strong>El mismo mensaje, otra vez</strong></td><td>El cliente lo archiva. Si el texto no cambia, no hay consecuencia y la fecha de pago se mueve sola.</td><td>Escalera de niveles: recordatorio, aviso firme, aviso con consecuencia. Cada nivel, una sola vez.</td></tr>
+        <tr><td><strong>Empezar por el ultimátum</strong></td><td>Quema la relación por un retraso administrativo y deja sin margen los casos en los que sí hay que apretar.</td><td>Guardar el tono duro para el tercer nivel, cuando ya ha habido dos avisos documentados.</td></tr>
+        <tr><td><strong>Nadie es dueño del proceso</strong></td><td>Los avisos salen cuando alguien tiene un rato. La cartera envejece en silencio y se descubre en el cierre de trimestre.</td><td>Un envío programado, un responsable con nombre y un informe semanal con tramos de antigüedad.</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="escalera">La escalera de avisos que funciona</h2>
+    <p>Tres niveles son suficientes para la mayoría de despachos y pymes. Los días son un punto de partida razonable; lo importante es que estén escritos y que no se salten.</p>
+    <table>
+      <thead><tr><th>Nivel</th><th>Cuándo</th><th>Tono y contenido</th></tr></thead>
+      <tbody>
+        <tr><td><strong>1 · Recordatorio</strong></td><td>5 días después del vencimiento</td><td>Administrativo y neutro: relación de facturas, importe total, fecha de vencimiento y una pregunta directa («¿ha salido el pago?»). Sin reproches.</td></tr>
+        <tr><td><strong>2 · Aviso firme</strong></td><td>15 días</td><td>Se menciona el retraso, se pide fecha concreta de pago y se recuerda el canal para hablar. Aquí conviene que firme el responsable de la cuenta.</td></tr>
+        <tr><td><strong>3 · Aviso con consecuencia</strong></td><td>30 días</td><td>Se anuncia qué pasa si no hay pago (suspensión de trabajos, paso a reclamación). Sin insultos y sin promesas que no se puedan cumplir.</td></tr>
+      </tbody>
+    </table>
+    <p>Por encima de 30 días el problema deja de ser de comunicación y pasa a ser de decisión: cobrar por vía formal, negociar un aplazamiento por escrito o asumir la pérdida. Eso ya no lo resuelve un flujo.</p>
+
+    <div class="callout warn">
+      <h3>Cuatro reglas que evitan el papelón</h3>
+      <p><strong>Un correo por cliente</strong>, no uno por factura: cinco correos el mismo día convierten un recordatorio en spam. <strong>Cada nivel, una sola vez</strong>: repetirlo resta autoridad. <strong>Nunca dos avisos el mismo día</strong>, aunque el envío anterior fallara. Y <strong>nada de reclamar lo ya pagado</strong>: si el cobro no está conciliado, se revisa antes de escribir.</p>
+    </div>
+
+    <h2>Lo que hay que medir cada semana</h2>
+    <p>Sin estas cifras, «vamos cobrando» es una sensación. Con ellas, se decide en dos minutos:</p>
+    <ul>
+      <li><strong>Antigüedad de la deuda por tramos</strong> — 1-30, 31-60, 61-90 y más de 90 días. Es la foto que dice si la mora crece o se está cobrando.</li>
+      <li><strong>Cobrado en los últimos 30 días</strong> frente a lo emitido en el mismo periodo.</li>
+      <li><strong>Días medios de cobro</strong>: cuánto tarda de media una factura en pagarse.</li>
+      <li><strong>Mayor deudor</strong> y número de facturas que concentra.</li>
+      <li><strong>Facturas sin email de contacto</strong>: son las que nunca se reclaman y nadie lo sabe.</li>
+    </ul>
+
+    <h2>Cómo lo automatiza el flujo</h2>
+    <p>El flujo de cobros vencidos del Pack Asesoría (29 nodos, cuatro partes independientes) convierte la escalera anterior en estados dentro de una hoja de Google Sheets. No es un «envía emails»: es el proceso con memoria.</p>
+    <table>
+      <thead><tr><th>Etapa</th><th>Qué hace</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Lectura diaria</strong></td><td>Cada mañana a las 9:00 lee la hoja de facturas y descarta las pagadas, las que aún no han vencido y las que no tienen email.</td></tr>
+        <tr><td><strong>Agrupación</strong></td><td>Junta todas las facturas vencidas del mismo cliente en un único correo, con el importe total y el detalle.</td></tr>
+        <tr><td><strong>Escalado</strong></td><td>Asigna nivel 1, 2 o 3 según los días transcurridos. Comprueba que ese nivel no se haya enviado ya y que no haya otro aviso hoy.</td></tr>
+        <tr><td><strong>Registro</strong></td><td>Escribe en la hoja el nivel alcanzado y la fecha del último recordatorio antes de enviar, para que un fallo de correo no marque al cliente como avisado.</td></tr>
+        <tr><td><strong>Informe semanal</strong></td><td>Los lunes envía la cartera por tramos, el total pendiente, los cinco mayores deudores y los avisos de datos incompletos.</td></tr>
+        <tr><td><strong>Enlace de pago</strong></td><td>Un enlace con clave marca la factura como pagada y avisa por Telegram al equipo; responde una página clara si el enlace ya se usó o es incorrecto.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Lo que el flujo no hace</h2>
+    <ul>
+      <li>No reclama judicialmente ni extrajudicialmente: avisa, ordena y deja prueba. La reclamación formal la decide una persona.</li>
+      <li>No calcula intereses de demora ni recargos. Eso exige criterio jurídico y contable, y queda fuera.</li>
+      <li>No modifica tu contabilidad ni tu ERP: escribe en su hoja y tú decides qué trasladar.</li>
+      <li>No adivina si una transferencia ha entrado: el pago se marca desde el enlace o a mano.</li>
+      <li>No garantiza que cobres. Reduce el tiempo que la deuda pasa sin que nadie la mire, que es lo único que depende de ti.</li>
+    </ul>
+
+    <h2>Qué necesitas para instalarlo</h2>
+    <ul>
+      <li>n8n 1.40 o superior, en tu servidor o en la nube.</li>
+      <li>Una hoja de Google Sheets con la pestaña de facturas y las columnas exactas que indica la guía (cliente, email, importe, vencimiento, estado).</li>
+      <li>Una cuenta SMTP para los correos y, si quieres avisos internos, un bot de Telegram.</li>
+      <li>Una URL pública para el enlace de pago (puede ser la de tu propia instancia de n8n).</li>
+    </ul>
+
+    <h2>Cómo empezar</h2>
+    <div class="steps">
+      <div class="step"><h3>1. Ordena la cartera</h3><p>Exporta las facturas pendientes a la hoja y rellena el email de cada cliente. Sin email no hay aviso, y esas facturas son justo las que se quedan olvidadas.</p></div>
+      <div class="step"><h3>2. Prueba en seco</h3><p>Ejecuta el flujo con tu propio correo como cliente de prueba y comprueba que el segundo nivel no se repite el mismo día.</p></div>
+      <div class="step"><h3>3. Fija la regla</h3><p>Escribe los tres plazos y quién firma cada nivel. El flujo ejecuta la regla; la regla la decides tú y no cambia sola.</p></div>
+    </div>
+
+    <h2>Cuándo no compensa</h2>
+    <p>Si cobras al contado, tienes pocas facturas al mes o todos tus clientes pagan por domiciliación puntual, la escalera se puede llevar a mano con una hoja y un recordatorio en el calendario. El flujo empieza a tener sentido cuando hay decenas de facturas abiertas, varias personas emitiendo y nadie sabe con certeza qué se ha reclamado y qué no.</p>
+
+    <h2>Preguntas frecuentes</h2>
+    <details><summary>¿Cuántos días hay que esperar antes de reclamar una factura?</summary><p>No hay una cifra legal única: depende de lo pactado y del plazo de pago aplicable. Lo que sí conviene es que el primer aviso salga a los pocos días del vencimiento, cuando aún se lee como un recordatorio administrativo.</p></details>
+    <details><summary>¿Es mejor llamar o escribir?</summary><p>Escribir primero, siempre: deja constancia de fecha, importe y petición. La llamada sirve para desbloquear un caso, pero su resultado se anota en el mismo hilo.</p></details>
+    <details><summary>¿Puedo reclamar intereses de demora?</summary><p>Puede haber derecho a ellos según contrato y normativa, pero calcularlos y aplicarlos es una decisión jurídica y contable. Este flujo no calcula intereses ni los reclama.</p></details>
+    <details><summary>¿Y si el cliente es grande o es un amigo?</summary><p>El proceso debe ser igual para todos: es lo que evita que la mora dependa de quién llama. Puede cambiar el tono del segundo nivel y quién firma el tercero, no la existencia del aviso.</p></details>
+    <details><summary>¿El flujo envía los correos por mí?</summary><p>Sí, con tu cuenta SMTP y un solo correo por cliente que agrupa sus facturas vencidas. Cada nivel se envía una vez y nunca dos el mismo día; el envío queda registrado en la hoja.</p></details>
+    <details><summary>¿Sirve si trabajo con Google Sheets y no con un ERP?</summary><p>Sí. Lee la hoja de facturas y escribe en ella el nivel y la fecha del último recordatorio. Si tienes ERP, exporta la cartera a la hoja o adapta la lectura.</p></details>
+
+    <div class="cta-box">
+      <h3>Los tres flujos del Pack Asesoría</h3>
+      <p>Cobros vencidos, onboarding documental y panel de KPIs, con guías paso a paso, plan de implantación de 30 días, plantillas RGPD y licencia comercial. Pago único de 29 €.</p>
+      <a class="btn primary" href="https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria">Ver el Pack Asesoría</a>
+    </div>
+    <p class="footer-note">Guía informativa. No constituye asesoramiento jurídico, contable ni fiscal. Los plazos, el tono y las consecuencias de cada aviso deben ajustarse al contrato con el cliente y a la normativa aplicable.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 FlowKit · Flujos n8n para pymes y despachos</div>
+    <div>
+      <a href="../">Hub</a> ·
+      <a href="../asesoria/">Asesorías</a> ·
+      <a href="../clinica/">Clínicas</a> ·
+      <a href="../inmobiliaria/">Inmobiliarias</a> ·
+      <a href="../calculadora/">Calculadora</a> ·
+      <a href="../fraude-proveedores/">Fraude del IBAN</a> ·
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="https://mrnpvn.gumroad.com/l/kit-de-arranque-ia">Kit gratis</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
