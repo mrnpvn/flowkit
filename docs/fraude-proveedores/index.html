@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fraude del cambio de IBAN: cómo verificar proveedores sin frenar pagos</title>
+<meta name="description" content="El fraude del cambio de IBAN (BEC) se cobra una factura entera. Cómo montar una doble verificación real, por qué el email no basta y cómo automatizarlo con n8n.">
+<link rel="canonical" href="https://mrnpvn.github.io/flowkit/fraude-proveedores/">
+<link rel="stylesheet" href="../assets/flowkit.css">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Fraude del cambio de IBAN: qué verificar y qué no delegar">
+<meta property="og:description" content="Por qué confirmar por email no protege de nada, qué controles sí funcionan y cómo automatizar el proceso sin bloquear los pagos.">
+<meta property="og:url" content="https://mrnpvn.github.io/flowkit/fraude-proveedores/">
+<meta property="og:image" content="https://mrnpvn.github.io/flowkit/assets/pack-asesoria-wide.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Article",
+      "headline": "Fraude del cambio de IBAN: qué verificar y qué no delegar",
+      "description": "Guía práctica sobre el fraude del cambio de cuenta bancaria de proveedores (BEC): controles que funcionan, controles que no, y automatización con n8n.",
+      "datePublished": "2026-10-21",
+      "dateModified": "2026-10-21",
+      "inLanguage": "es",
+      "author": {"@type": "Organization", "name": "FlowKit"},
+      "publisher": {"@type": "Organization", "name": "FlowKit"},
+      "mainEntityOfPage": "https://mrnpvn.github.io/flowkit/fraude-proveedores/",
+      "image": "https://mrnpvn.github.io/flowkit/assets/pack-asesoria-wide.png"
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "¿Validar el IBAN detecta el fraude?", "acceptedAnswer": {"@type": "Answer", "text": "No. El dígito de control (mod-97) solo detecta errores de tecleo y transposición. Una cuenta fraudulenta tiene un IBAN perfectamente válido: pertenece a otra persona."}},
+        {"@type": "Question", "name": "¿No basta con pedir confirmación por email al proveedor?", "acceptedAnswer": {"@type": "Answer", "text": "No. En el fraude BEC el atacante controla el buzón o el dominio del proveedor, así que contesta él mismo y confirma el cambio. La verificación tiene que salir de un canal que el atacante no controle: un teléfono ya conocido o una dirección de finanzas ya guardada."}},
+        {"@type": "Question", "name": "¿Qué es un periodo de enfriamiento y por qué ayuda?", "acceptedAnswer": {"@type": "Answer", "text": "Es un plazo obligatorio (por ejemplo 48 o 72 horas) entre la solicitud de cambio y su aprobación. Rompe la urgencia, que es la palanca principal del fraude, y da tiempo a que alguien del equipo detecte la incoherencia."}},
+        {"@type": "Question", "name": "¿El flujo cambia la cuenta bancaria o paga?", "acceptedAnswer": {"@type": "Answer", "text": "No. El flujo no toca tu banco ni tu ERP: recoge la solicitud, valida el formato, calcula el riesgo, retiene el cambio, avisa, exige la aprobación desde la dirección ya guardada y deja un registro. La modificación la hace una persona en el sistema de siempre."}},
+        {"@type": "Question", "name": "¿Necesito n8n Cloud o un servidor propio?", "acceptedAnswer": {"@type": "Answer", "text": "Funciona en n8n self-hosted, que es gratuito, y en n8n Cloud desde la versión 1.40. Los datos se quedan en tu instancia, con tus credenciales."}}
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "FlowKit", "item": "https://mrnpvn.github.io/flowkit/"},
+        {"@type": "ListItem", "position": 2, "name": "Fraude del cambio de IBAN", "item": "https://mrnpvn.github.io/flowkit/fraude-proveedores/"}
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="../">Flow<b>Kit</b></a>
+    <nav>
+      <a href="../#gratis">Flujos gratis</a>
+      <a href="../#sectores">Por sector</a>
+      <a href="../#pack">Pack Asesoría</a>
+      <a href="../calculadora/">Calculadora</a>
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section>
+  <div class="wrap post">
+    <p class="crumbs"><a href="../">FlowKit</a> / Fraude del cambio de IBAN</p>
+    <h1>Fraude del cambio de IBAN: verificar sin bloquear los pagos</h1>
+    <p class="lead">Un proveedor escribe que ha cambiado de banco. El importe es correcto, el nombre coincide, la factura existe. Solo cambia el número de cuenta. Cuando alguien lo detecta, el dinero lleva días fuera y probablemente ya se ha dividido en tres transferencias.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/mrnpvn/flowkit/blob/main/workflows/finance/vendor-bank-change-guard.json" target="_blank" rel="noopener">Ver el flujo (gratis, MIT)</a>
+      <a class="btn ghost" href="#controles">Ir a los controles que funcionan</a>
+    </div>
+
+    <h2>Cómo es el fraude, paso a paso</h2>
+    <p>No es un hacker entrando en tu banco. Es una conversación que parece normal y que alguien ha preparado con paciencia:</p>
+    <ol>
+      <li><strong>Reconocimiento.</strong> Se identifica un proveedor habitual y una persona concreta de tu equipo que aprueba pagos, normalmente en firmas de correo, facturas o redes profesionales.</li>
+      <li><strong>Buzón o dominio.</strong> El atacante entra en el correo del proveedor o registra un dominio casi idéntico (<code>proveedor-sl.com</code> por <code>proveedor.es</code>).</li>
+      <li><strong>La petición.</strong> Llega un correo en el hilo real, con la firma real: «hemos cambiado de entidad, adjuntamos certificado». A veces con prisa: «para no retrasar el pago de este mes».</li>
+      <li><strong>La confirmación falsa.</strong> Si alguien responde «¿de verdad es correcto?», contesta el atacante. El control parece cumplido y no ha verificado nada.</li>
+      <li><strong>El cobro.</strong> Se paga. La cuenta es de un tercero, a menudo una mula de dinero. Recuperarlo es raro y lento.</li>
+    </ol>
+
+    <div class="callout warn">
+      <h3>Lo que hace que funcione</h3>
+      <p>No es la tecnología: es la <strong>urgencia</strong> y la <strong>confianza en el canal equivocado</strong>. Cualquier control que se pueda satisfacer respondiendo al mismo correo no protege de nada.</p>
+    </div>
+
+    <h2>Los tres controles que se usan y no sirven</h2>
+    <table>
+      <thead><tr><th>Control habitual</th><th>Por qué falla</th><th>Qué sí hace falta</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Validar el IBAN</strong></td><td>El dígito de control solo detecta errores de tecleo. Una cuenta fraudulenta tiene un IBAN válido: es de otra persona.</td><td>Comprobar <em>titularidad</em> con el proveedor por un canal independiente, no el formato.</td></tr>
+        <tr><td><strong>Pedir confirmación por email</strong></td><td>El atacante controla el buzón o el dominio. Contesta él y confirma su propio cambio.</td><td>Confirmar por teléfono con un número que ya estuviera en el contrato o el CRM, nunca el del correo.</td></tr>
+        <tr><td><strong>Avisar «por si acaso»</strong></td><td>Un aviso que nadie tiene que aprobar se lee y se olvida. No deja rastro de quién decidió.</td><td>Un paso de aprobación con responsable identificado y registro de la decisión.</td></tr>
+      </tbody>
+    </table>
+
+    <h2 id="controles">Los seis controles que sí funcionan</h2>
+    <p>Ninguno es exótico. La diferencia está en que sean obligatorios y en que no dependan de que alguien se acuerde:</p>
+    <ul>
+      <li><strong>Canal independiente.</strong> La verificación sale por teléfono o por una dirección de finanzas que ya tenías guardada, nunca por la dirección que pide el cambio.</li>
+      <li><strong>Periodo de enfriamiento.</strong> Entre 48 y 72 horas entre la solicitud y la ejecución. La urgencia es la herramienta del atacante: el enfriamiento la desactiva.</li>
+      <li><strong>Un solo uso.</strong> El enlace de aprobación caduca, no se puede reutilizar y no se puede reenviar a otra persona.</li>
+      <li><strong>Dirección de destino fija.</strong> La aprobación solo se envía a la dirección de finanzas ya registrada. Si alguien cambia el destinatario del aviso, el flujo no obedece.</li>
+      <li><strong>Registro imposible de reescribir.</strong> Cada solicitud, rechazo, duplicado y aprobación queda en una hoja de auditoría. Si no está registrado, no ocurrió.</li>
+      <li><strong>Recordatorios con escalado.</strong> Avisos a las 24, 48 y 72 horas; si nadie responde, se escala y la solicitud caduca en lugar de quedarse dormida.</li>
+    </ul>
+
+    <h2>Cómo lo automatiza el flujo</h2>
+    <p>El flujo gratuito <code>vendor-bank-change-guard.json</code> (60 nodos, 5 integraciones) no es un formulario con un aviso: es el procedimiento completo, con las reglas anteriores convertidas en estados.</p>
+    <table>
+      <thead><tr><th>Etapa</th><th>Qué hace</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Entrada</strong></td><td>Formulario interno o correo del proveedor. Normaliza el IBAN, valida el dígito de control y detecta duplicados de la misma solicitud.</td></tr>
+        <tr><td><strong>Riesgo</strong></td><td>Puntúa según señales: cuenta en otro país, IBAN nunca visto para ese proveedor, cambio de persona de contacto, prisa explícita.</td></tr>
+        <tr><td><strong>Retención</strong></td><td>Pasa a <code>PENDING</code> con fecha de liberación. Aprobar antes del enfriamiento se rechaza sin tocar el estado.</td></tr>
+        <tr><td><strong>Aprobación</strong></td><td>Token de un solo uso enviado solo a la dirección de finanzas ya guardada y almacenado únicamente como hash. Repetir el clic no duplica nada.</td></tr>
+        <tr><td><strong>Vigilancia</strong></td><td>Avisos a 24, 48 y 72 horas con escalado; al vencer, la solicitud pasa a <code>EXPIRED</code> y hay que empezar de nuevo.</td></tr>
+        <tr><td><strong>Auditoría</strong></td><td>Hoja append-only con rechazos, duplicados, revisiones manuales y aprobaciones, con fecha y responsable.</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Lo que el flujo no hace</h2>
+    <ul>
+      <li>No modifica la cuenta bancaria en tu ERP ni en tu banco. Eso lo hace una persona, después.</li>
+      <li>No verifica la titularidad de la cuenta: para eso hay que hablar con el proveedor por un canal que ya conocías.</li>
+      <li>No sustituye una política antifraude ni el criterio de quien aprueba. Ordena el proceso y deja prueba de lo que pasó.</li>
+      <li>No envía tus datos a servidores de FlowKit: corre en tu instancia de n8n con tus credenciales.</li>
+    </ul>
+
+    <h2>Qué necesitas para instalarlo</h2>
+    <ul>
+      <li>n8n 1.40 o superior, en tu servidor o en la nube.</li>
+      <li>Una hoja de Google Sheets con las pestañas de solicitudes, configuración y auditoría (las columnas están en la guía del flujo).</li>
+      <li>Una cuenta SMTP para el aviso de aprobación y, si quieres avisos internos, un bot de Telegram.</li>
+      <li>Una URL pública para el enlace de aprobación (puede ser la de tu propia instancia de n8n).</li>
+    </ul>
+
+    <h2>Cómo empezar sin comprar nada</h2>
+    <div class="steps">
+      <div class="step"><h3>Importa el flujo</h3><p>Descarga <code>vendor-bank-change-guard.json</code> y impórtalo en n8n. Trae notas dentro explicando cada nodo y qué hay que configurar.</p></div>
+      <div class="step"><h3>Pruébalo con datos falsos</h3><p>Una solicitud de prueba, un IBAN inventado válido y una aprobación. Comprueba que aprobar antes del enfriamiento se rechaza.</p></div>
+      <div class="step"><h3>Actívalo con una regla</h3><p>Una sola regla basta para empezar: ningún cambio de IBAN se ejecuta sin aprobación desde la dirección de finanzas ya registrada.</p></div>
+    </div>
+
+    <h2>Cuándo no compensa</h2>
+    <p>Si pagas a cinco proveedores fijos con domiciliación y nadie ha cambiado nunca de cuenta, el riesgo es bajo y basta con una norma escrita. A partir de ahí —proveedores nuevos, pagos internacionales, varias personas aprobando— el coste de un solo incidente supera cualquier automatización. Y si nadie va a mirar las solicitudes retenidas, no montes el sistema: el problema no es el flujo, es quién aprueba.</p>
+
+    <h2>Preguntas frecuentes</h2>
+    <details><summary>¿Validar el IBAN detecta el fraude?</summary><p>No. El dígito de control (mod-97) solo detecta errores de tecleo y transposición. Una cuenta fraudulenta tiene un IBAN perfectamente válido: pertenece a otra persona.</p></details>
+    <details><summary>¿No basta con pedir confirmación por email al proveedor?</summary><p>No. En el fraude BEC el atacante controla el buzón o el dominio, así que contesta él mismo y confirma el cambio. La verificación tiene que salir de un canal que el atacante no controle.</p></details>
+    <details><summary>¿Qué es el periodo de enfriamiento y por qué ayuda?</summary><p>Un plazo obligatorio de 48 a 72 horas entre la solicitud y la aprobación. Rompe la urgencia, que es la palanca principal del fraude, y da tiempo a detectar la incoherencia.</p></details>
+    <details><summary>¿El flujo cambia la cuenta o paga?</summary><p>No. Recoge la solicitud, valida, puntúa, retiene, avisa, exige aprobación y deja registro. La modificación la hace una persona en el sistema de siempre.</p></details>
+    <details><summary>¿Necesito n8n Cloud?</summary><p>No. Funciona en n8n self-hosted, que es gratuito, y en n8n Cloud desde la versión 1.40. Los datos se quedan en tu instancia.</p></details>
+    <details><summary>¿Sirve si el cambio es legítimo?</summary><p>Sí, y es lo normal. El proveedor real también pasa por el proceso: se valida, se espera el enfriamiento y se aprueba desde finanzas. Solo tarda dos días más, y queda registrado.</p></details>
+
+    <div class="cta-box">
+      <h3>Si además quieres ordenar cobros y altas</h3>
+      <p>El Pack Asesoría incluye tres flujos de producción —cobros vencidos, onboarding documental y panel de KPIs— con guías, plan de implantación de 30 días y plantillas RGPD. Pago único de 29 €.</p>
+      <a class="btn primary" href="https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria">Ver el Pack Asesoría</a>
+    </div>
+    <p class="footer-note">Guía informativa. No constituye asesoramiento jurídico, contable ni de seguridad. Cada empresa debe adaptar sus controles internos a su tamaño, su sector y sus obligaciones.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 FlowKit · Flujos n8n para pymes y despachos</div>
+    <div>
+      <a href="../">Hub</a> ·
+      <a href="../asesoria/">Asesorías</a> ·
+      <a href="../clinica/">Clínicas</a> ·
+      <a href="../inmobiliaria/">Inmobiliarias</a> ·
+      <a href="../calculadora/">Calculadora</a> ·
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="https://mrnpvn.gumroad.com/l/kit-de-arranque-ia">Kit gratis</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
