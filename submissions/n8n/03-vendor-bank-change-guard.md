@@ -4,7 +4,7 @@
 > **El archivo que se sube es el JSON:** [`workflows/finance/vendor-bank-change-guard.json`](../../workflows/finance/vendor-bank-change-guard.json)
 > URL directa: https://raw.githubusercontent.com/mrnpvn/flowkit/main/workflows/finance/vendor-bank-change-guard.json
 
-**Plantilla:** Vendor bank-change guard with out-of-band approval and cooling period
+**Plantilla:** Verify vendor bank detail changes with Google Sheets, email and Telegram
 **Archivo para enviar:** [`workflows/finance/vendor-bank-change-guard.json`](../../workflows/finance/vendor-bank-change-guard.json)
 **Estado:** listo para envío (import/export limpio en n8n 2.43.8 + 45 pruebas de lógica).
 **Sustituye a:** envíos 1 y 2, rechazados por «too basic». Esta vez no es una ruta: es un mecanismo.
@@ -60,8 +60,29 @@ Regla de n8n: **una plantilla en revisión a la vez** hasta tener 3 aprobadas. N
 
 ## Texto de ficha (inglés, para pegar en el portal)
 
-- **Title:** Vendor bank-change guard with out-of-band approval and cooling period
+- **Title:** Verify vendor bank detail changes with Google Sheets, email and Telegram
 - **Short description:** Hold every vendor bank-detail change until the finance contact already on file clears a cooling period. Validates the IBAN, scores risk, refuses replays and expired links, escalates at 24/48/72 h and keeps an append-only audit trail. No paid services.
+
+### Description for the portal (Markdown, ~200 words, paste as is)
+
+```markdown
+## Who's it for
+Finance and accounts-payable teams that receive vendor payment-detail changes by email and cannot afford a fraudulent one to be applied.
+
+## How it works
+Every request is held in a pending state. The IBAN is validated (format, mod-97 checksum and country match), the vendor is matched against your sheet and the request is scored for risk. A single-use approval link goes only to the finance address already on file, never to the sender. Approval is refused until the cooling period ends (48 h, or 72 h for higher risk); replays, unknown and expired links are denied and logged. A daily watchdog reminds at 24 h, escalates at 48 h and closes the request as expired at 72 h, with one digest instead of per-vendor noise. Every attempt lands in an append-only audit tab.
+
+## How to set up
+Create the Vendors, BankChanges and Audit tabs (headers in the Setup note), fill Vendors with the trusted finance address per vendor, set `base_url` and `finance_lead` in the three Config nodes, connect the Google Sheets, SMTP and Telegram credentials, then activate.
+
+## Requirements
+Google Sheets, an SMTP account, a Telegram bot and a public n8n URL for the approval links. No paid services.
+
+## How to customize
+Change thresholds, cooling periods and token TTL in the Config nodes; add or remove form fields in the trigger.
+```
+
+> **Regla de n8n (guía oficial, 21-oct)**: la sticky amarilla debe contener **la descripción completa**, no un resumen. Ya está aplicada en el `.json`.
 - **Categories:** Finance & Accounting · Google Sheets · Telegram · Email · Security
 - **Level:** Advanced
 - **Requirements:** Google account (Sheets) · SMTP account · Telegram bot + chat ID · public n8n URL for the approval links. No paid services.

@@ -26,7 +26,7 @@ Pasos detallados y credenciales: [`../docs/INSTALACION-N8N.md`](../docs/INSTALAC
 | Recordatorio de cita + recuperación de cancelaciones | `clinica/` | ✅ listo |
 | Appointment reminders with confirm/cancel links (EN, para la librería n8n) | `clinica/` | ✅ listo |
 | Captación de leads + respuesta automática | `inmobiliaria/` | ✅ listo |
-| Vendor bank-detail change guard (EN, for the n8n library) | `finance/` | ✅ ready |
+| Verify vendor bank detail changes with Google Sheets, email and Telegram (EN, for the n8n library) | `finance/` | ✅ ready |
 | 💎 Cobros vencidos (recordatorios + informe + enlace de pago) | `asesoria/` | 💎 premium |
 | 💎 Onboarding documental (checklist + seguimiento + portal) | `asesoria/` | 💎 premium |
 | 💎 Panel de KPIs (cobros, expedientes y documentación) | `asesoria/` | 💎 premium |
