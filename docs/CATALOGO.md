@@ -148,6 +148,27 @@ El pack incluye: los 3 flujos premium en `.json`, las guías de cada flujo, el p
 
 ---
 
+## Finance — vendor bank-detail change guard (English, for the n8n library)
+
+- **Archivo:** [`workflows/finance/vendor-bank-change-guard.json`](../workflows/finance/vendor-bank-change-guard.json)
+- **Guía (EN):** [`FLOW-VENDOR-BANK-CHANGE-GUARD.md`](FLOW-VENDOR-BANK-CHANGE-GUARD.md)
+- **Vertical:** cualquier empresa con proveedores y pagos por transferencia (finanzas, operaciones, administración)
+- **Disparador:** formulario de solicitud + webhook de decisión + vigilancia diaria 07:30 + Error Trigger
+- **Qué hace:**
+  1. **Retiene el cambio** — el proveedor envía los datos nuevos por formulario; el IBAN se valida (formato, **checksum mod-97** y país) y el proveedor se cruza con la hoja `Vendors`.
+  2. **Puntúa el riesgo y decide** — proveedor desconocido, proveedor inactivo, país del IBAN distinto, dominio del solicitante distinto, buzón gratuito y cambios recientes suman puntos. Riesgo ≥ 70 va a revisión manual **sin enlace de aprobación**; riesgo ≥ 40 usa enfriamiento de 72 h (48 h por defecto).
+  3. **Verifica fuera de banda** — el enlace de un solo uso va **solo a la dirección de finanzas ya guardada**, nunca a la que pide el cambio. Solo se guarda el hash SHA-256 del token.
+  4. **Decide en un clic** — aprobar antes de que acabe el enfriamiento se rechaza sin tocar el estado; un segundo clic devuelve «Already handled»; tokens inválidos o caducados → HTTP 400 y fila en `Audit`.
+  5. **Vigila y escala** — recordatorio a las 24 h, escalado al responsable a las 48 h, cierre como `EXPIRED` a las 72 h (con aviso al solicitante) y un digest diario para el responsable.
+- **Qué necesitas:** un libro de Google Sheets con las pestañas `Vendors`, `BankChanges` y `Audit` (cabeceras en la guía), cuenta SMTP, bot de Telegram y la URL pública de tu n8n. n8n 1.40+.
+- **Datos personales que trata:** datos de contacto del solicitante y del proveedor, y datos bancarios. El IBAN completo queda en la hoja porque finanzas lo necesita para aplicar el cambio: acceso restringido, verificación en dos pasos y plazo de conservación definido. Base legal habitual: ejecución de contrato e interés legítimo en prevención de fraude.
+- **Ahorro estimado:** sustituye la verificación informal por correo (el vector habitual del fraude BEC) por un circuito con enfriamiento, aprobador conocido y rastro de auditoría. No elimina la llamada de confirmación: la hace obligatoria y demostrable.
+- **Tiempo de puesta en marcha:** 10–15 minutos.
+- **Nota legal:** no verifica la titularidad del IBAN ni aplica el cambio en el banco; eso lo hace una persona después de la aprobación. No sustituye controles de prevención de blanqueo ni el juicio del equipo de finanzas.
+- **Nivel técnico:** avanzado (60 nodos, 7 Code, 4 Crypto, 11 Sheets).
+
+---
+
 ## Historial de versiones
 
 | Fecha | Cambio |
@@ -159,3 +180,4 @@ El pack incluye: los 3 flujos premium en `.json`, las guías de cada flujo, el p
 | 2026-10-20 | Flujo **premium** `asesoria/cobros-vencidos` v1.0.0 (recordatorios escalonados 5/15/30 días + informe semanal de cartera + enlace de pago + Error Trigger) + guía `FLUJO-COBROS-VENCIDOS.md`. |
 | 2026-10-20 | Flujo **premium** `asesoria/onboarding-documental` v1.0.0 (alta con checklist por servicio + seguimiento 3/7/14/21 días + portal privado del cliente + registro de recepción + informe semanal + Error Trigger) + guía `FLUJO-ONBOARDING-DOCUMENTAL.md`. |
 | 2026-10-20 | Flujo **premium** `asesoria/kpi-panel` v1.0.0 (27 KPIs de cobros, expedientes y documentación + panel en Sheets + histórico semanal + resumen y acción por Telegram + Error Trigger) + guía `FLUJO-KPI-PANEL.md`. |
+| 2026-10-21 | Flujo gratuito `finance/vendor-bank-change-guard` v1.0.0 (validación IBAN mod-97 + scoring de riesgo + token de un solo uso con hash + enfriamiento + watchdog 24/48/72 h + auditoría) + guía `FLOW-VENDOR-BANK-CHANGE-GUARD.md`. |
