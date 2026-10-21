@@ -4,7 +4,7 @@
 > **El archivo que se sube es el JSON:** [`workflows/finance/vendor-bank-change-guard.json`](../../workflows/finance/vendor-bank-change-guard.json)
 > URL directa: https://raw.githubusercontent.com/mrnpvn/flowkit/main/workflows/finance/vendor-bank-change-guard.json
 
-**Plantilla:** Vendor bank-detail change guard with dual approval
+**Plantilla:** Vendor bank-change guard with out-of-band approval and cooling period
 **Archivo para enviar:** [`workflows/finance/vendor-bank-change-guard.json`](../../workflows/finance/vendor-bank-change-guard.json)
 **Estado:** listo para envío (import/export limpio en n8n 2.43.8 + 45 pruebas de lógica).
 **Sustituye a:** envíos 1 y 2, rechazados por «too basic». Esta vez no es una ruta: es un mecanismo.
@@ -60,7 +60,7 @@ Regla de n8n: **una plantilla en revisión a la vez** hasta tener 3 aprobadas. N
 
 ## Texto de ficha (inglés, para pegar en el portal)
 
-- **Title:** Vendor bank-detail change guard with dual approval
+- **Title:** Vendor bank-change guard with out-of-band approval and cooling period
 - **Short description:** Hold every vendor bank-detail change until the finance contact already on file clears a cooling period. Validates the IBAN, scores risk, refuses replays and expired links, escalates at 24/48/72 h and keeps an append-only audit trail. No paid services.
 - **Categories:** Finance & Accounting · Google Sheets · Telegram · Email · Security
 - **Level:** Advanced

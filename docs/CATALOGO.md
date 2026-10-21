@@ -148,7 +148,7 @@ El pack incluye: los 3 flujos premium en `.json`, las guías de cada flujo, el p
 
 ---
 
-## Finance — vendor bank-detail change guard (English, for the n8n library)
+## Finance — vendor bank-change guard (English, for the n8n library)
 
 - **Archivo:** [`workflows/finance/vendor-bank-change-guard.json`](../workflows/finance/vendor-bank-change-guard.json)
 - **Guía (EN):** [`FLOW-VENDOR-BANK-CHANGE-GUARD.md`](FLOW-VENDOR-BANK-CHANGE-GUARD.md)

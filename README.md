@@ -29,7 +29,7 @@ FlowKit empaqueta ese trabajo en flujos probados: los importas, conectas tus cue
 | Clínica: recordatorio de cita + recuperación de cancelaciones | Clínica / dental | ✅ Listo | [`workflows/clinica/recordatorio-citas.json`](workflows/clinica/recordatorio-citas.json) |
 | Inmobiliaria: captación de leads + respuesta automática | Inmobiliaria | ✅ Listo | [`workflows/inmobiliaria/captacion-leads-respuesta.json`](workflows/inmobiliaria/captacion-leads-respuesta.json) |
 | Clinic: appointment reminders with confirm/cancel links (EN) | Clinic | ✅ Ready | [`workflows/clinica/appointment-reminders-confirm-cancel.json`](workflows/clinica/appointment-reminders-confirm-cancel.json) |
-| Finance: vendor bank-detail change guard (EN) — hold, verify out of band, cooling period, audit | Finance / ops | ✅ Ready | [`workflows/finance/vendor-bank-change-guard.json`](workflows/finance/vendor-bank-change-guard.json) |
+| Finance: vendor bank-change guard (EN) — hold, verify out of band, cooling period, audit | Finance / ops | ✅ Ready | [`workflows/finance/vendor-bank-change-guard.json`](workflows/finance/vendor-bank-change-guard.json) |
 | 💎 Asesoría: cobros vencidos (recordatorios escalonados + informe + enlace de pago) | Asesoría / gestoría | 💎 Premium | [Pack Asesoría](https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria) |
 | 💎 Asesoría: onboarding documental (checklist + seguimiento + portal del cliente) | Asesoría / gestoría | 💎 Premium | [Pack Asesoría](https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria) |
 | 💎 Asesoría: panel de KPIs (cobros, expedientes y documentación) | Asesoría / gestoría | 💎 Premium | [Pack Asesoría](https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria) |

@@ -1,4 +1,4 @@
-# Vendor bank-detail change guard
+# Vendor bank-change guard with out-of-band approval and cooling period
 
 A payment-detail change is the highest-value request an attacker can send to a finance team. This workflow makes that request **impossible to apply by accident**: every change is held, verified out of band, cooled down, and logged before anyone touches the banking system.
 
