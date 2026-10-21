@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FlowKit — n8n workflow templates you import and run</title>
+<meta name="description" content="Free, importable n8n workflows for clinics, finance teams and small practices. Vendor bank-change guard, appointment reminders, ROI calculator. MIT licensed.">
+<link rel="canonical" href="https://mrnpvn.github.io/flowkit/en/">
+<link rel="alternate" hreflang="en" href="https://mrnpvn.github.io/flowkit/en/">
+<link rel="alternate" hreflang="es" href="https://mrnpvn.github.io/flowkit/">
+<link rel="alternate" hreflang="x-default" href="https://mrnpvn.github.io/flowkit/">
+<link rel="stylesheet" href="../assets/flowkit.css">
+<meta property="og:type" content="website">
+<meta property="og:title" content="FlowKit — n8n workflow templates you import and run">
+<meta property="og:description" content="Free n8n workflows with real logic: a vendor bank-change guard, clinic appointment reminders and an ROI calculator. No account, no signup.">
+<meta property="og:image" content="https://mrnpvn.github.io/flowkit/assets/pack-asesoria-wide.png">
+<meta property="og:url" content="https://mrnpvn.github.io/flowkit/en/">
+<meta property="og:locale" content="en">
+<meta property="og:locale:alternate" content="es_ES">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "name": "FlowKit",
+      "url": "https://mrnpvn.github.io/flowkit/en/",
+      "inLanguage": "en",
+      "description": "Free and paid n8n workflow templates for small businesses and professional practices."
+    },
+    {
+      "@type": "FAQPage",
+      "inLanguage": "en",
+      "mainEntity": [
+        {"@type": "Question", "name": "Do I need n8n Cloud to use these workflows?", "acceptedAnswer": {"@type": "Answer", "text": "No. Every workflow runs on n8n self-hosted (free) and on n8n Cloud, version 1.40 or newer. You only need accounts for the services each workflow touches: Google Sheets, Telegram and email in the examples."}},
+        {"@type": "Question", "name": "Do I have to write code?", "acceptedAnswer": {"@type": "Answer", "text": "No. Code nodes ship already written and tested. You edit message text and credentials. Each workflow carries sticky notes inside n8n explaining every step."}},
+        {"@type": "Question", "name": "Where does my data go?", "acceptedAnswer": {"@type": "Answer", "text": "It stays in your own n8n instance with your own credentials. Nothing is sent to our servers. There is no tracking script on this site and no cookie banner, because there are no cookies."}},
+        {"@type": "Question", "name": "Is the vendor bank-change guard really free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The 60-node workflow, its documentation and its unit-tested logic are MIT licensed and live in the public repository. No account, no email required."}},
+        {"@type": "Question", "name": "Which language are the workflows in?", "acceptedAnswer": {"@type": "Answer", "text": "The clinic and finance workflows are fully in English, including node names, sticky notes and emails. The four sector workflows for Spanish-speaking practices are in Spanish; the paid pack is Spanish-language only for now."}}
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="./">Flow<b>Kit</b></a>
+    <nav>
+      <a href="#free">Free workflows</a>
+      <a href="#calculator">ROI calculator</a>
+      <a href="#pack">Paid pack</a>
+      <a href="#start">How it works</a>
+      <a href="#faq">FAQ</a>
+      <a href="../" hreflang="es" lang="es">Español</a>
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <p class="kicker">n8n workflow templates · import and run</p>
+    <h1>Automate the admin.<br><em>Keep the client work.</em></h1>
+    <p class="lead">These are not screenshots or tutorials. Each one is a <code>.json</code> file you import into n8n in about thirty seconds, with the branching, retries and error handling already wired. Two of them are fully in English and free forever.</p>
+    <div class="cta">
+      <a class="btn primary" href="#free">Take a free workflow</a>
+      <a class="btn ghost" href="#calculator">Check if it is worth automating</a>
+    </div>
+    <p class="trust"><span><i>✓</i>No signup</span> &nbsp;·&nbsp; <span><i>✓</i>MIT licence</span> &nbsp;·&nbsp; <span><i>✓</i>n8n 1.40+</span> &nbsp;·&nbsp; <span><i>✓</i>Data stays in your instance</span></p>
+  </div>
+</section>
+
+<section id="free">
+  <div class="wrap">
+    <h2>Two workflows that do real work</h2>
+    <p class="sub">Both are complete mechanisms, not single steps: they hold a decision, keep state between runs and handle the failure path. Download the file, import it, connect your accounts.</p>
+    <div class="grid">
+      <article class="card">
+        <span class="tag">Finance · 60 nodes · EN</span>
+        <h3>Vendor bank-change guard</h3>
+        <p>A supplier emails a new IBAN. Instead of updating your records, the workflow scores the request, holds it through a cooling period, sends a one-time link to the finance address you already had on file, and refuses to approve early. Tokens are stored only as a SHA-256 hash; every denied or repeated attempt goes to an append-only audit sheet.</p>
+        <a class="go" href="https://github.com/mrnpvn/flowkit/blob/main/workflows/finance/vendor-bank-change-guard.json" target="_blank" rel="noopener">Get the workflow →</a>
+      </article>
+      <article class="card">
+        <span class="tag">Clinics · 21 nodes · EN</span>
+        <h3>Appointment reminders with confirm and cancel</h3>
+        <p>The evening before, each patient gets one email with signed links. They confirm or cancel in a single click, the sheet updates by ID, and a cancellation tells the front desk exactly which slot just opened. No health data leaves the sheet.</p>
+        <a class="go" href="https://github.com/mrnpvn/flowkit/blob/main/workflows/clinica/appointment-reminders-confirm-cancel.json" target="_blank" rel="noopener">Get the workflow →</a>
+      </article>
+    </div>
+    <p class="sub" style="margin-top:26px">Also in the repository, in Spanish: web lead capture, client onboarding with tax deadlines, real-estate lead scoring and the Spanish version of the clinic flow. <a href="https://github.com/mrnpvn/flowkit/tree/main/workflows" target="_blank" rel="noopener">Browse all workflows</a>.</p>
+  </div>
+</section>
+
+<section id="calculator">
+  <div class="wrap pack">
+    <div>
+      <p class="kicker">Free tool · no tracking</p>
+      <h2>Is it worth automating at all?</h2>
+      <p class="sub">Most automation projects die because the task was never worth automating. Put in your own numbers and see the monthly cost of the copying, reminding and chasing before you commit to anything.</p>
+      <ul class="check">
+        <li>Runs entirely in your browser.<small>No form, no cookies, no request to any server. Close the tab and nothing is left.</small></li>
+        <li>Built to talk you out of it.<small>If the saving is smaller than the time spent maintaining the workflow, it tells you to leave it alone.</small></li>
+        <li>Same arithmetic we use ourselves.<small>Eleven working months a year, not twelve.</small></li>
+      </ul>
+    </div>
+    <aside class="price">
+      <p class="kicker" style="margin-bottom:0">Cost</p>
+      <div class="now">€0</div>
+      <div>No account · no email</div>
+      <p class="note">Nothing is stored and nothing is sent. It is a page with a script in it.</p>
+      <a class="btn primary" href="roi-calculator/">Open the calculator</a>
+      <p class="mini">Works offline once loaded</p>
+    </aside>
+  </div>
+</section>
+
+<section id="pack">
+  <div class="wrap pack">
+    <div>
+      <h2>FlowKit Pack — production workflows for accountancy practices</h2>
+      <p class="sub">Three workflows that cover the whole client cycle — getting paid, onboarding and measuring — built with retries, an error branch that pings you on Telegram, and no duplicate sends. <strong>Documentation and templates are in Spanish</strong>, because the practices it was built with are Spanish.</p>
+      <ul class="check">
+        <li>Overdue invoices — reminders at 5 / 15 / 30 days, weekly receivables report, payment link.<small>29 nodes. Stops you chasing invoices by hand.</small></li>
+        <li>Document onboarding — per-service checklist, follow-ups at 3 / 7 / 14 / 21 days, client portal to upload files.<small>51 nodes. Onboarding stops depending on memory.</small></li>
+        <li>KPI panel — 27 indicators on collections, files and documents, weekly history, Telegram digest.<small>20 nodes. Decisions from data, not from a feeling.</small></li>
+        <li>Guides, a 30-day rollout plan and 3 GDPR templates plus 2 message templates.<small>Usable with real clients from day one.</small></li>
+        <li>Commercial licence and 12 months of updates.<small>One payment, no subscription.</small></li>
+      </ul>
+      <p class="sub" style="margin-top:18px">Honest limits: it is a Spanish-language product for Spanish-speaking practices. If you need an English version of these three, tell us through an issue and it moves up the list.</p>
+    </div>
+    <aside class="price">
+      <p class="kicker" style="margin-bottom:0">Launch price</p>
+      <div class="now">€29</div>
+      <div><span class="before">€39</span> · first 20 copies</div>
+      <p class="note">One payment. The three workflows as <code>.json</code> plus guides, GDPR templates and the 30-day plan. Gumroad handles refunds.</p>
+      <a class="btn primary" href="https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria">Buy the pack</a>
+      <p class="mini">Delivered immediately · documentation in Spanish</p>
+    </aside>
+  </div>
+</section>
+
+<section id="start">
+  <div class="wrap">
+    <h2>Starting takes less time than reading this page</h2>
+    <p class="sub">The free workflows ask for nothing. Here is the whole process.</p>
+    <div class="steps">
+      <div class="step"><h3>Download the file</h3><p>Pick a <code>.json</code> from the repository. No email, no newsletter, no gate.</p></div>
+      <div class="step"><h3>Import it into n8n</h3><p>Workflows → Import from File. Every node carries a sticky note saying what it does and what you must configure.</p></div>
+      <div class="step"><h3>Connect and activate</h3><p>Choose your credentials (Google Sheets, Telegram, SMTP), edit the wording, press Active. Step-by-step docs included.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>Questions people ask before importing</h2>
+    <p class="sub">Short answers, no sales voice.</p>
+    <details><summary>Do I need n8n Cloud to use these workflows?</summary><p>No. Every workflow runs on n8n self-hosted (free) and on n8n Cloud, version 1.40 or newer. You only need accounts for the services each workflow touches: Google Sheets, Telegram and email in the examples.</p></details>
+    <details><summary>Do I have to write code?</summary><p>No. Code nodes ship already written and tested. You edit message text and credentials. Each workflow carries sticky notes inside n8n explaining every step, plus a written guide.</p></details>
+    <details><summary>Where does my data go?</summary><p>It stays in your own n8n instance with your own credentials. Nothing reaches our servers. This site runs no analytics script and sets no cookies, which is also why there is no cookie banner.</p></details>
+    <details><summary>Is the vendor bank-change guard really free?</summary><p>Yes. The 60-node workflow, its documentation and the logic tests are MIT licensed and public. There is no paid tier of it. The paid pack is a different product, in Spanish, for accountancy practices.</p></details>
+    <details><summary>Which language are the workflows in?</summary><p>The clinic and finance workflows are fully in English: node names, sticky notes, emails, error messages. The four sector workflows for Spanish-speaking practices are in Spanish, and so is the paid pack.</p></details>
+    <details><summary>Can I use these with clients and charge for it?</summary><p>The MIT licence lets you use and modify the free workflows commercially, including inside client projects. You may not resell the files as templates. The paid pack carries its own commercial licence.</p></details>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 FlowKit · n8n workflows for small businesses</div>
+    <div>
+      <a href="../" hreflang="es" lang="es">Español</a> ·
+      <a href="roi-calculator/">Calculator</a> ·
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="https://mrnpvn.gumroad.com" target="_blank" rel="noopener">Store</a> ·
+      <a href="https://github.com/mrnpvn/flowkit/blob/main/LICENSE" target="_blank" rel="noopener">MIT licence (free workflows)</a> ·
+      <a href="https://mrnpvn.gumroad.com/l/kit-de-arranque-ia" lang="es">Starter kit (ES, free)</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

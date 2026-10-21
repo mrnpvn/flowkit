@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ROI calculator: hours and cost of repetitive admin work</title>
+<meta name="description" content="Work out in ten seconds how many hours a month your team loses on repetitive admin and what it costs. No signup, no data sent, no promises.">
+<link rel="canonical" href="https://mrnpvn.github.io/flowkit/en/roi-calculator/">
+<link rel="alternate" hreflang="en" href="https://mrnpvn.github.io/flowkit/en/roi-calculator/">
+<link rel="alternate" hreflang="es" href="https://mrnpvn.github.io/flowkit/calculadora/">
+<link rel="alternate" hreflang="x-default" href="https://mrnpvn.github.io/flowkit/calculadora/">
+<link rel="stylesheet" href="../../assets/flowkit.css">
+<meta property="og:type" content="website">
+<meta property="og:title" content="ROI calculator: hours and cost of repetitive admin work">
+<meta property="og:description" content="Put in your numbers and see the real cost of copying, reminding and chasing by hand. Everything is computed in your browser.">
+<meta property="og:url" content="https://mrnpvn.github.io/flowkit/en/roi-calculator/">
+<meta property="og:image" content="https://mrnpvn.github.io/flowkit/assets/pack-asesoria-wide.png">
+<meta property="og:locale" content="en">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Repetitive admin cost calculator",
+      "url": "https://mrnpvn.github.io/flowkit/en/roi-calculator/",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Any browser",
+      "inLanguage": "en",
+      "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR"},
+      "description": "Calculates the monthly hours and cost of repetitive admin work for a small team."
+    },
+    {
+      "@type": "FAQPage",
+      "inLanguage": "en",
+      "mainEntity": [
+        {"@type": "Question", "name": "Is my data sent anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. The calculation runs in your browser with JavaScript. There is no form, no cookie and no request to any server."}},
+        {"@type": "Question", "name": "What automation percentage should I use?", "acceptedAnswer": {"@type": "Answer", "text": "Between 40% and 60% is a reasonable starting point for reminding, copying and follow-up tasks. Not everything can be automated: the judgement call and the exception stay human."}},
+        {"@type": "Question", "name": "Is the saving real money in the bank?", "acceptedAnswer": {"@type": "Answer", "text": "Not necessarily. The calculation prices time at an hourly cost. It turns into money if you invoice more, serve clients better, or avoid a hire."}}
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "FlowKit", "item": "https://mrnpvn.github.io/flowkit/en/"},
+        {"@type": "ListItem", "position": 2, "name": "ROI calculator", "item": "https://mrnpvn.github.io/flowkit/en/roi-calculator/"}
+      ]
+    }
+  ]
+}
+</script>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="brand" href="../">Flow<b>Kit</b></a>
+    <nav>
+      <a href="../#free">Free workflows</a>
+      <a href="../#pack">Paid pack</a>
+      <a href="../" hreflang="es" lang="es">Español</a>
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <p class="crumbs"><a href="../">FlowKit</a> / Calculator</p>
+    <h1>What is the manual work costing you?</h1>
+    <p class="lead">Copying data, sending reminders, chasing documents. Small tasks that, added up, eat half a morning every week. Put in your numbers: the arithmetic happens in your browser and nothing is sent anywhere.</p>
+
+    <div class="calc">
+      <div class="card">
+        <div class="field">
+          <label for="people">People doing repetitive admin</label>
+          <input id="people" type="number" min="1" max="200" step="1" value="3" inputmode="numeric">
+          <span class="hint">Count only those who copy, remind or chase by hand.</span>
+        </div>
+        <div class="field">
+          <label for="minutes">Minutes per day, per person</label>
+          <input id="minutes" type="number" min="0" max="480" step="5" value="45" inputmode="numeric">
+          <span class="hint">An honest estimate beats a flattering number.</span>
+        </div>
+        <div class="field">
+          <label for="days">Working days per month</label>
+          <input id="days" type="number" min="1" max="31" step="1" value="21" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label for="rate">Cost per hour (€)</label>
+          <input id="rate" type="number" min="0" max="500" step="1" value="30" inputmode="decimal">
+          <span class="hint">Approximate employer cost, not gross salary.</span>
+        </div>
+        <div class="field">
+          <label for="pct">Share that can be automated (%)</label>
+          <input id="pct" type="number" min="0" max="100" step="5" value="50" inputmode="numeric">
+          <span class="hint">Reminders, copies and follow-ups usually land between 40% and 60%.</span>
+        </div>
+      </div>
+
+      <aside class="result" aria-live="polite">
+        <h2>Estimated saving</h2>
+        <p class="big" id="year">-</p>
+        <p class="biglabel">per year, in team time</p>
+        <div class="row"><span>Repetitive hours per month</span><span id="hours">-</span></div>
+        <div class="row"><span>Cost of those hours per month</span><span id="cost">-</span></div>
+        <div class="row"><span>Automatable hours per month</span><span id="auto">-</span></div>
+        <div class="row"><span>Estimated saving per month</span><span id="save">-</span></div>
+        <div class="row"><span>8-hour working days per month</span><span id="daysOut">-</span></div>
+        <p class="mini" style="font-size:.8rem;color:var(--muted);margin:14px 0 0">An indicative estimate, not a promise of savings. It assumes eleven working months a year.</p>
+      </aside>
+    </div>
+
+    <div class="callout" style="margin-top:28px">
+      <h3>How to read the result</h3>
+      <p>If the monthly saving is smaller than the time it takes you to build and maintain a workflow, do not build it. Automation pays off when the task repeats every week and the rules are clear enough to write down.</p>
+    </div>
+
+    <h2 style="margin-top:56px">What to automate first</h2>
+    <table>
+      <thead><tr><th>Task</th><th>The signal it is time</th><th>Workflow</th></tr></thead>
+      <tbody>
+        <tr><td>Deadline and appointment reminders</td><td>Someone opens a spreadsheet or a calendar every morning so a date is not missed.</td><td><a href="https://github.com/mrnpvn/flowkit/blob/main/workflows/clinica/appointment-reminders-confirm-cancel.json" target="_blank" rel="noopener">Appointment reminders</a></td></tr>
+        <tr><td>Changing supplier bank details</td><td>The request arrives by email and someone forwards it to whoever can edit the master data.</td><td><a href="https://github.com/mrnpvn/flowkit/blob/main/workflows/finance/vendor-bank-change-guard.json" target="_blank" rel="noopener">Vendor bank-change guard</a></td></tr>
+        <tr><td>Overdue invoices</td><td>Invoices are chased from memory and everyone keeps their own list.</td><td><a href="../#pack">In the paid pack (ES)</a></td></tr>
+        <tr><td>Answering inbound leads</td><td>The first reply depends on who checks the inbox that morning.</td><td><a href="https://github.com/mrnpvn/flowkit/blob/main/workflows/general/capture-web-leads.json" target="_blank" rel="noopener">Web lead capture</a></td></tr>
+      </tbody>
+    </table>
+
+    <h2>Questions</h2>
+    <details><summary>Is my data sent anywhere?</summary><p>No. The calculation runs in your browser with JavaScript. There is no form, no cookie and no request to any server.</p></details>
+    <details><summary>What automation percentage should I use?</summary><p>Between 40% and 60% is a reasonable starting point for reminding, copying and follow-up. The judgement call, the exception and the client relationship stay human.</p></details>
+    <details><summary>Is the saving real money in the bank?</summary><p>Not necessarily. The calculation prices time at an hourly cost. It turns into money if you invoice more, serve clients better, or avoid a hire.</p></details>
+
+    <div class="cta-box">
+      <h3>From the number to the workflow</h3>
+      <p>Start with a free workflow and see the level. Both English ones are complete mechanisms with retries and an error path, not tutorials.</p>
+      <a class="btn primary" href="../#free">See the free workflows</a>
+      <a class="btn ghost" href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener" style="margin-left:8px">Open the repository</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>© 2026 FlowKit · n8n workflows for small businesses</div>
+    <div>
+      <a href="../">Hub</a> ·
+      <a href="../../calculadora/" hreflang="es" lang="es">Calculadora (ES)</a> ·
+      <a href="https://github.com/mrnpvn/flowkit" target="_blank" rel="noopener">GitHub</a> ·
+      <a href="https://mrnpvn.gumroad.com" target="_blank" rel="noopener">Store</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var ids = ["people", "minutes", "days", "rate", "pct"];
+  var el = {};
+  ids.forEach(function (id) { el[id] = document.getElementById(id); });
+
+  var out = {
+    year: document.getElementById("year"),
+    hours: document.getElementById("hours"),
+    cost: document.getElementById("cost"),
+    auto: document.getElementById("auto"),
+    save: document.getElementById("save"),
+    daysOut: document.getElementById("daysOut")
+  };
+
+  var eur = new Intl.NumberFormat("en-IE", { style: "currency", currency: "EUR", maximumFractionDigits: 0 });
+  var num1 = new Intl.NumberFormat("en-IE", { maximumFractionDigits: 1 });
+
+  function val(id, min, max, fallback) {
+    var n = parseFloat(String(el[id].value).replace(",", "."));
+    if (!isFinite(n)) { return fallback; }
+    if (n < min) { return min; }
+    if (n > max) { return max; }
+    return n;
+  }
+
+  function calc() {
+    var people = val("people", 1, 200, 1);
+    var minutes = val("minutes", 0, 480, 0);
+    var days = val("days", 1, 31, 21);
+    var rate = val("rate", 0, 500, 0);
+    var share = val("pct", 0, 100, 0) / 100;
+
+    var hours = (people * minutes * days) / 60;
+    var cost = hours * rate;
+    var auto = hours * share;
+    var save = cost * share;
+    var year = save * 11;
+
+    out.hours.textContent = num1.format(hours) + " h";
+    out.cost.textContent = eur.format(cost);
+    out.auto.textContent = num1.format(auto) + " h";
+    out.save.textContent = eur.format(save);
+    out.daysOut.textContent = num1.format(auto / 8);
+    out.year.textContent = eur.format(year);
+  }
+
+  ids.forEach(function (id) {
+    el[id].addEventListener("input", calc);
+    el[id].addEventListener("change", calc);
+  });
+
+  calc();
+})();
+</script>
+
+</body>
+</html>

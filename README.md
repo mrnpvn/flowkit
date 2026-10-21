@@ -1,91 +1,115 @@
-# FlowKit — plantillas de automatización n8n para pymes y despachos
+# FlowKit — n8n workflow templates for small businesses
 
-[![Licencia: MIT](https://img.shields.io/badge/licencia-MIT-blue.svg)](LICENSE)
-[![Compatible con n8n](https://img.shields.io/badge/n8n-compatible-EA4B71.svg)](https://n8n.io)
+**English** · [Versión en español](README.es.md)
 
-**Flujos n8n listos para importar y usar**, pensados para negocios pequeños que no tienen equipo técnico: asesorías y gestorías, clínicas, inmobiliarias, agencias y despachos profesionales.
+[![Licence: MIT](https://img.shields.io/badge/licence-MIT-blue.svg)](LICENSE)
+[![n8n compatible](https://img.shields.io/badge/n8n-compatible-EA4B71.svg)](https://n8n.io)
 
-No son capturas de pantalla ni tutoriales genéricos: cada flujo es un **archivo `.json` que importas en tu n8n en 30 segundos**, con credenciales, plantillas de mensajes y documentación paso a paso en español.
+**n8n workflows you import and run**, built for small businesses without a technical team: clinics, finance and operations teams, agencies, and professional practices.
+
+These are not screenshots or generic tutorials. Every workflow is a **`.json` file you import into n8n in about thirty seconds**, with credential notes, message templates and step-by-step documentation — in English for the clinic and finance workflows, in Spanish for the four sector workflows built with Spanish-speaking practices.
+
+Web version with guides and a free ROI calculator: **https://mrnpvn.github.io/flowkit/en/**
 
 ---
 
-## ¿Qué resuelve FlowKit?
+## What FlowKit solves
 
-Una pyme pierde horas cada semana en tareas repetitivas que ya están resueltas:
+A small business loses hours every week on work that was already solved:
 
-- un formulario de contacto **no se guarda en ningún sitio** y se pierde un lead;
-- los **recordatorios de cita** se hacen a mano, una llamada por cliente;
-- los **plazos fiscales** se persiguen en una hoja de cálculo;
-- nadie contesta al cliente hasta el día siguiente (y se va a la competencia).
+- a contact form **is stored nowhere** and a lead is lost;
+- **appointment reminders** are made by hand, one call per patient;
+- **bank detail changes** arrive by email and get applied on trust;
+- nobody answers the inbound lead until the next morning, and it goes to a competitor.
 
-FlowKit empaqueta ese trabajo en flujos probados: los importas, conectas tus cuentas y funcionan. **Sin código, sin consultora, sin cuota mensual de SaaS.**
+FlowKit packages that work into tested workflows: import, connect your accounts, and it runs. **No code, no consultant, no monthly SaaS fee.**
 
-## Índice de flujos
+## Workflow index
 
-| Flujo | Vertical | Estado | Archivo |
+| Workflow | Vertical | Status | File |
 |---|---|---|---|
-| Captura de leads web (formulario → hoja de cálculo → aviso Telegram) | General | ✅ Listo | [`workflows/general/captura-leads-web.json`](workflows/general/captura-leads-web.json) |
-| Asesoría: alta de cliente + recordatorio de plazos fiscales | Asesoría / gestoría | ✅ Listo | [`workflows/asesoria/alta-cliente-plazos.json`](workflows/asesoria/alta-cliente-plazos.json) |
-| Clínica: recordatorio de cita + recuperación de cancelaciones | Clínica / dental | ✅ Listo | [`workflows/clinica/recordatorio-citas.json`](workflows/clinica/recordatorio-citas.json) |
-| Inmobiliaria: captación de leads + respuesta automática | Inmobiliaria | ✅ Listo | [`workflows/inmobiliaria/captacion-leads-respuesta.json`](workflows/inmobiliaria/captacion-leads-respuesta.json) |
-| Clinic: appointment reminders with confirm/cancel links (EN) | Clinic | ✅ Ready | [`workflows/clinica/appointment-reminders-confirm-cancel.json`](workflows/clinica/appointment-reminders-confirm-cancel.json) |
-| Finance: vendor bank-change guard (EN) — hold, verify out of band, cooling period, audit | Finance / ops | ✅ Ready | [`workflows/finance/vendor-bank-change-guard.json`](workflows/finance/vendor-bank-change-guard.json) |
-| 💎 Asesoría: cobros vencidos (recordatorios escalonados + informe + enlace de pago) | Asesoría / gestoría | 💎 Premium | [Pack Asesoría](https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria) |
-| 💎 Asesoría: onboarding documental (checklist + seguimiento + portal del cliente) | Asesoría / gestoría | 💎 Premium | [Pack Asesoría](https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria) |
-| 💎 Asesoría: panel de KPIs (cobros, expedientes y documentación) | Asesoría / gestoría | 💎 Premium | [Pack Asesoría](https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria) |
+| Vendor bank-change guard — hold, verify out of band, cooling period, audit | Finance / ops | ✅ English | [`workflows/finance/vendor-bank-change-guard.json`](workflows/finance/vendor-bank-change-guard.json) |
+| Appointment reminders with confirm/cancel links | Clinic | ✅ English | [`workflows/clinica/appointment-reminders-confirm-cancel.json`](workflows/clinica/appointment-reminders-confirm-cancel.json) |
+| Web lead capture (form → spreadsheet → Telegram alert) | General | ✅ Spanish (`captura-leads-web.json`) | [`workflows/general`](workflows/general) |
+| Client onboarding + tax deadlines | Accountancy (ES) | ✅ Spanish | [`workflows/asesoria/alta-cliente-plazos.json`](workflows/asesoria/alta-cliente-plazos.json) |
+| Appointment reminder + cancellation recovery | Clinic (ES) | ✅ Spanish | [`workflows/clinica/recordatorio-citas.json`](workflows/clinica/recordatorio-citas.json) |
+| Lead capture and instant reply | Real estate (ES) | ✅ Spanish | [`workflows/inmobiliaria/captacion-leads-respuesta.json`](workflows/inmobiliaria/captacion-leads-respuesta.json) |
+| 💎 Overdue invoices — staged reminders, receivables report, payment link | Accountancy (ES) | 💎 Paid pack | [FlowKit Pack](https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria) |
+| 💎 Document onboarding — checklist, follow-ups, client portal | Accountancy (ES) | 💎 Paid pack | [FlowKit Pack](https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria) |
+| 💎 KPI panel — collections, files, documents, weekly history | Accountancy (ES) | 💎 Paid pack | [FlowKit Pack](https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria) |
 
-> Los tres flujos premium **no están en este repositorio**: van dentro del [Pack Asesoría](https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria) (29 € de lanzamiento, 20 primeras unidades). Aquí queda la documentación completa de cada uno —qué hace, qué hojas necesita, qué datos trata y cuánto tiempo ahorra— para poder evaluarlo antes de comprar. Los flujos gratuitos de arriba siguen siendo libres y sin registro.
+> The three premium workflows are **not in this repository**. They ship inside the [FlowKit Pack](https://mrnpvn.gumroad.com/l/flowkit-pack-asesoria) (€29, first 20 copies), together with guides, a 30-day rollout plan and GDPR templates. Their full documentation stays public here — what each one does, which sheets it needs, what data it touches — so you can judge it before paying. **The pack and its documentation are in Spanish**; the free English workflows below are not a trial version of it.
+>
+> The free workflows in this repository are MIT licensed, need no signup, and are not a demo.
 
-Cada flujo incluye su propia ficha en [`docs/CATALOGO.md`](docs/CATALOGO.md): qué hace, qué necesitas configurar, qué datos toca y cuánto tiempo ahorra. Las guías de puesta en marcha están en [`docs/`](docs/): [`INSTALACION-N8N.md`](docs/INSTALACION-N8N.md) (general), [`FLUJO-ASESORIA.md`](docs/FLUJO-ASESORIA.md) (alta de cliente + plazos fiscales), [`FLUJO-CLINICA.md`](docs/FLUJO-CLINICA.md) (recordatorios de cita + cancelaciones) y [`FLUJO-INMOBILIARIA.md`](docs/FLUJO-INMOBILIARIA.md) (captación de leads + respuesta automática). El flujo de clínica existe también en inglés, documentado en [`docs/FLOW-APPOINTMENTS-EN.md`](docs/FLOW-APPOINTMENTS-EN.md), y el de finanzas en [`docs/FLOW-VENDOR-BANK-CHANGE-GUARD.md`](docs/FLOW-VENDOR-BANK-CHANGE-GUARD.md). El flujo premium de cobros vencidos se documenta en [`docs/FLUJO-COBROS-VENCIDOS.md`](docs/FLUJO-COBROS-VENCIDOS.md), el de onboarding documental en [`docs/FLUJO-ONBOARDING-DOCUMENTAL.md`](docs/FLUJO-ONBOARDING-DOCUMENTAL.md) y el panel de KPIs en [`docs/FLUJO-KPI-PANEL.md`](docs/FLUJO-KPI-PANEL.md).
+## The two English workflows in detail
 
-Versiones web de estas guías, con más detalle y una calculadora de tiempo: [asesorías](https://mrnpvn.github.io/flowkit/asesoria/), [clínicas](https://mrnpvn.github.io/flowkit/clinica/), [inmobiliarias](https://mrnpvn.github.io/flowkit/inmobiliaria/) y [calculadora de coste](https://mrnpvn.github.io/flowkit/calculadora/).
+### Vendor bank-change guard (60 nodes, 5 integrations)
 
-## Instalación (2 minutos)
+A supplier emails new bank details. This workflow does not update anything on trust:
 
-1. Descarga el `.json` del flujo que quieras.
-2. En n8n: **Workflows → Import from File** y selecciona el archivo.
-3. Abre cada nodo marcado en rojo, elige tus credenciales (Google Sheets, Telegram, etc.) y guarda.
+1. **Validates** the IBAN (mod-97 checksum and country) and **scores the risk** — unknown vendor, inactive vendor, foreign country, free-mail domain, change arriving right after an invoice.
+2. **Holds** the change through a cooling period (48 h or 72 h depending on the score).
+3. **Sends a one-time link** to the finance address already on file — never to the address that requested the change.
+4. Stores the token **only as a SHA-256 hash**, so a leaked spreadsheet cannot be replayed.
+5. **Refuses early approval** without touching state, answers a second click with "Already handled", and expires the request through a watchdog at 24 / 48 / 72 hours.
+6. Writes an **append-only audit row** for denials, duplicates and manual review.
 
-Guía detallada, requisitos y solución de problemas: [`docs/INSTALACION-N8N.md`](docs/INSTALACION-N8N.md).
+Documentation: [`docs/FLOW-VENDOR-BANK-CHANGE-GUARD.md`](docs/FLOW-VENDOR-BANK-CHANGE-GUARD.md).
 
-**Requisitos:** n8n self-hosted o n8n Cloud (versión 1.40 o superior) y las cuentas de las herramientas que use cada flujo (Google Sheets y Telegram en los ejemplos incluidos).
+### Appointment reminders with confirm and cancel (21 nodes)
 
-## Casos de uso por vertical
+Every evening the workflow reads tomorrow's appointments and sends one email per patient with signed confirm and cancel links. Patients update their own status; a cancellation tells the front desk exactly which slot just opened. No health data ever leaves the spreadsheet.
 
-- **Asesorías y gestorías** — alta de cliente sin retipear datos, avisos automáticos de plazos (IVA, IRPF, modelos), registro de documentos recibidos.
-- **Clínicas y dentales** — recordatorio de cita 24 h antes, recuperación de huecos por cancelación, confirmación por el propio paciente.
-- **Inmobiliarias** — respuesta inmediata al lead de la web, emparejamiento con la cartera, reparto entre comerciales y aviso de leads sin atender.
-- **Agencias y despachos** — captura de formularios, seguimiento de presupuestos, informes periódicos al cliente sin exportar CSV a mano.
+Documentation: [`docs/FLOW-APPOINTMENTS-EN.md`](docs/FLOW-APPOINTMENTS-EN.md).
 
-Si tu caso no está, [abre una petición](https://github.com/mrnpvn/flowkit/issues): los flujos que se piden se construyen.
+## Installation (2 minutes)
 
-## Personalización y soporte
+1. Download the `.json` of the workflow you want.
+2. In n8n: **Workflows → Import from File** and pick the file.
+3. Open each node flagged in red, choose your credentials (Google Sheets, Telegram, SMTP) and save.
 
-- Cada flujo lleva **notas dentro del propio n8n** (nodo *sticky note*) explicando qué hace cada paso.
-- Las plantillas de mensajes están en español y se editan sin tocar la lógica.
-- ¿Se te atasca algo? Abre un *issue* con el nombre del flujo y el error; se responde en el repositorio.
+Requirements: **n8n self-hosted or n8n Cloud, version 1.40 or newer**, plus accounts for the services the workflow uses. Both English workflows are tested with a clean import and re-export on n8n 2.43.8.
 
-## Privacidad y RGPD
+Detailed guide, requirements and troubleshooting (in Spanish): [`docs/INSTALACION-N8N.md`](docs/INSTALACION-N8N.md).
 
-Estos flujos se ejecutan **en tu propia instancia de n8n**, con tus credenciales. Los datos de tus clientes no pasan por servidores nuestros.
+## Use cases
 
-Aun así, tenlo en cuenta al usarlos con datos personales (RGPD, y con especial cuidado con datos de salud en el caso de clínicas):
+- **Finance and operations** — a bank detail change cannot be applied by email alone; every request is held, verified through a separate channel and logged.
+- **Clinics and dental practices** — reminder 24 hours ahead, recovery of slots freed by cancellation, patient confirms their own appointment.
+- **Accountancy practices** — client onboarding without retyping data, automatic deadline alerts, document tracking.
+- **Real estate agencies** — instant reply to web leads, matching against the portfolio, assignment by area.
+- **Agencies and practices** — form capture, quote follow-up, periodic client reports without exporting CSV by hand.
 
-- conecta solo las cuentas necesarias y con permisos mínimos;
-- informa a tus clientes de para qué usas sus datos (recordatorios, gestión) en tu política de privacidad;
-- guarda los datos en herramientas con contrato de encargado de tratamiento (Google Workspace, etc.);
-- borra los datos cuando dejen de ser necesarios.
+If your case is missing, [open an issue](https://github.com/mrnpvn/flowkit/issues): requested workflows get built.
 
-## Licencia
+## Customisation and support
 
-El código y la documentación de este repositorio se publican bajo licencia **MIT** (ver [`LICENSE`](LICENSE)): úsalos, modifícalos y úsalos comercialmente en tu negocio, incluida tu actividad con clientes.
+- Every workflow carries **sticky notes inside n8n** explaining what each step does and what you must configure.
+- Message templates are separate from the logic: you edit wording, not code.
+- Stuck on something? Open an issue with the workflow name and the error.
 
-Los **packs premium** (versiones ampliadas, flujos sectoriales completos y soporte) se distribuyen aparte y no están cubiertos por la MIT.
+## Privacy and GDPR
 
-## Contribuir
+These workflows run **in your own n8n instance, with your own credentials**. Client data never reaches our servers.
 
-¿Un flujo que funciona en tu negocio? Un *pull request* con el `.json` exportado y una ficha en `docs/CATALOGO.md` es bienvenido. Normas en [`CONTRIBUTING.md`](CONTRIBUTING.md).
+That does not make compliance automatic. When you run them on personal data (GDPR / RGPD, and especially health data in clinics):
+
+- connect only the accounts you need, with minimum permissions;
+- tell your clients what you use their data for in your privacy notice;
+- keep data in tools that offer a data-processing agreement;
+- delete data once it is no longer needed.
+
+## Licence
+
+The code and documentation in this repository are released under the **MIT licence** (see [`LICENSE`](LICENSE)): use them, modify them and use them commercially in your business, including in client work. You may not resell the files as templates.
+
+The **premium pack** (extended versions, complete sector workflows and support) is distributed separately and is not covered by MIT.
+
+## Contributing
+
+A workflow that works in your business? A pull request with the exported `.json` and an entry in `docs/CATALOGO.md` is welcome. Rules in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ---
 
-FlowKit es un producto de **AIVANTA**.
+FlowKit is a product of **AIVANTA**.
