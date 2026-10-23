@@ -69,8 +69,20 @@
   </url>
   <url>
     <loc>https://mrnpvn.github.io/flowkit/kit-arranque/</loc>
-    <lastmod>2026-10-22</lastmod>
+    <lastmod>2026-10-23</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mrnpvn.github.io/flowkit/kit-arranque/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mrnpvn.github.io/flowkit/en/starter-kit/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mrnpvn.github.io/flowkit/kit-arranque/"/>
+  </url>
+  <url>
+    <loc>https://mrnpvn.github.io/flowkit/en/starter-kit/</loc>
+    <lastmod>2026-10-23</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="es" href="https://mrnpvn.github.io/flowkit/kit-arranque/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://mrnpvn.github.io/flowkit/en/starter-kit/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://mrnpvn.github.io/flowkit/en/starter-kit/"/>
   </url>
 </urlset>
